@@ -31,7 +31,16 @@ export async function POST(req: Request, params: { params: Promise<{ code: strin
         .update({ is_connected: true, has_left: false, last_seen_at: new Date().toISOString() })
         .eq("id", mine.id);
       await broadcastRoom(code);
-      return json({ code, playerId: mine.id, sessionToken: existing, reconnected: true });
+      // On renvoie l'identité que le serveur connaît : le client ne doit pas
+      // garder en mémoire un pseudo qui ne correspond plus à sa place.
+      return json({
+        code,
+        playerId: mine.id,
+        sessionToken: existing,
+        pseudo: mine.pseudo,
+        avatarId: mine.avatar_id,
+        reconnected: true,
+      });
     }
   }
 
@@ -69,5 +78,12 @@ export async function POST(req: Request, params: { params: Promise<{ code: strin
   }
 
   await broadcastRoom(code);
-  return json({ code, playerId: player.id, sessionToken: token, spectator });
+  return json({
+    code,
+    playerId: player.id,
+    sessionToken: token,
+    pseudo: check.value,
+    avatarId,
+    spectator,
+  });
 }

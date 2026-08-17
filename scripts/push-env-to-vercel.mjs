@@ -44,7 +44,12 @@ const vercel = process.platform === "win32" ? "vercel.cmd" : "vercel";
 
 function run(args, stdin) {
   return new Promise((resolve) => {
-    const child = spawn(vercel, args, { cwd: root, stdio: ["pipe", "pipe", "pipe"] });
+    // shell: true est nécessaire sous Windows pour lancer vercel.cmd.
+    const child = spawn(vercel, args, {
+      cwd: root,
+      stdio: ["pipe", "pipe", "pipe"],
+      shell: process.platform === "win32",
+    });
     let out = "";
     child.stdout.on("data", (d) => (out += d));
     child.stderr.on("data", (d) => (out += d));

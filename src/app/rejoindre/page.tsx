@@ -7,7 +7,7 @@ import { Avatar } from "@/components/Avatar";
 import { IdentityFields } from "@/components/IdentityFields";
 import { Button, Card, Notice } from "@/components/ui";
 import { saveProfile, saveSession, getSession, useProfile } from "@/lib/session";
-import { checkPseudo, isValidRoomCode, normalizeRoomCode } from "@/lib/text";
+import { checkPseudo, isValidRoomCode, normalize, normalizeRoomCode } from "@/lib/text";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 
 type Peek = {
@@ -75,12 +75,17 @@ function RejoindreInner() {
     setLoading(true);
     setError(null);
     try {
+      // On ne reprend sa place que si c'est bien le même pseudo : sinon,
+      // c'est quelqu'un d'autre sur le même appareil (ou le même onglet),
+      // et il doit entrer comme nouveau joueur.
       const existing = getSession(code);
+      const sameName = existing && normalize(existing.pseudo) === normalize(check.value);
+
       const res = await fetch(`/api/rooms/${code}/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(existing ? { "x-session-token": existing.token } : {}),
+          ...(sameName ? { "x-session-token": existing.token } : {}),
         },
         body: JSON.stringify({ pseudo: check.value, avatarId }),
       });
@@ -89,13 +94,14 @@ function RejoindreInner() {
         setError(data?.error ?? "Impossible de rejoindre.");
         return;
       }
+      // L'identité fait foi côté serveur (utile quand on reprend sa place).
       saveSession(code, {
         token: data.sessionToken,
         playerId: data.playerId,
-        pseudo: check.value,
-        avatarId,
+        pseudo: data.pseudo ?? check.value,
+        avatarId: data.avatarId ?? avatarId,
       });
-      saveProfile(check.value, avatarId);
+      saveProfile(data.pseudo ?? check.value, data.avatarId ?? avatarId);
       router.push(`/room/${code}`);
     } catch {
       setError("Réseau indisponible. Réessaie.");

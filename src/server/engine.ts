@@ -24,9 +24,6 @@ import {
   PAUSE_CANCEL_MS,
   RESULT_SECONDS,
   REVOTE_SECONDS,
-  SCORE_CIVIL_WIN,
-  SCORE_IMPOSTER_WIN,
-  SCORE_PASS_PENALTY,
   VOTE_SECONDS,
   type RoomSettings,
 } from "@/lib/constants";
