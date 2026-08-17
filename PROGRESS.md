@@ -46,6 +46,29 @@ Stack : Next.js 16 (App Router, TS) · Tailwind v4 · Supabase (Postgres + Realt
    déploiements passent par `vercel --prod` en local, ce qui marche très bien.
 3. **Repo privé** — créé en privé par prudence. `gh repo edit --visibility public` si tu veux l'ouvrir.
 
+## Réglages : ce qui est par défaut
+
+Créer une room ne demande qu'un pseudo. Tout le reste vit dans **Paramètres avancés**, replié par
+défaut, au même endroit à la création et dans le lobby (composant `GameSettingsForm`).
+
+| Réglage | Défaut | Options |
+| --- | --- | --- |
+| Manches | **1** | 1 / 3 / 5 / 7 / illimité |
+| Tours d'indices | **1** | 1 / 2 / 3 |
+| Joueurs max | 8 | 3 → 12 |
+| Imposteurs | Auto | Auto / 1 / 2 / 3 |
+| Chrono lobby | **Sans limite** | 60s / 120s / 300s |
+| Chrono indice | **Sans limite** | 15s / 20s / 30s / 45s |
+| Chrono vote | **Sans limite** | 30s / 45s / 60s |
+| Chrono devinette | **Sans limite** | 20s / 30s / 45s |
+| Écran de résultat | **Sans limite** (l'hôte enchaîne) | 15s / 20s / 30s |
+| Discussion libre | Non | 30s / 45s / 60s |
+
+Les durées ne sont pas codées en dur : ce sont des réglages en secondes où **`0` vaut « sans
+limite »**. Le moteur sait vivre avec une échéance nulle — il n'avance alors que sur action des
+joueurs (indice envoyé, vote complet, hôte qui enchaîne). Activer un chrono, c'est juste mettre une
+valeur non nulle : toute la mécanique de deadline est déjà branchée et testée.
+
 ## Décisions à valider
 
 - **Tokens Tailwind en CSS plutôt qu'en `tailwind.config`.** Tailwind v4 (installé par
@@ -80,6 +103,15 @@ Stack : Next.js 16 (App Router, TS) · Tailwind v4 · Supabase (Postgres + Realt
   successives, la manche se termine sans élimination et sans point.
 - **Reprise de place conditionnée au pseudo.** On ne réutilise le token stocké que si le pseudo saisi
   est le même ; sinon c'est quelqu'un d'autre sur le même appareil, et il entre comme nouveau joueur.
+- **Le point 5 (« choix de l'anime ») reste à trancher.** Il n'y a jamais eu de sélecteur d'anime
+  dans la création de room : ce qu'on y choisit, ce sont six *catégories* de mots (personnages,
+  lieux, techniques, objets, créatures, titres d'œuvres). J'ai donc appliqué la lecture non
+  destructive : la mention « expert » a sauté, la sélection est repliée avec le reste, et le pool de
+  mots reste volontairement grand public (Naruto, One Piece, Dragon Ball, MHA, Demon Slayer, AoT,
+  JJK, Bleach, FMA, HxH, Ghibli, Pokémon…). Si tu voulais en fait un **filtre par univers**
+  (« je veux jouer uniquement du Naruto et du One Piece »), c'est un autre chantier : il faut taguer
+  chaque paire avec son univers et ajouter le filtre au tirage. Dis-moi.
+- **Point 4 en attente**, rien n'a été anticipé dessus.
 
 ## Limites connues
 
