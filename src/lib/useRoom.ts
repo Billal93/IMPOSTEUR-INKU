@@ -9,6 +9,8 @@ import type { RoomState } from "./types";
 
 const POLL_ACTIVE_MS = 2500;
 const POLL_IDLE_MS = 6000;
+/** Onglet en arrière-plan : juste assez pour rester dans la fenêtre de grâce. */
+const POLL_HIDDEN_MS = 15000;
 
 export type RoomApi = {
   refresh: () => Promise<RoomState | null>;
@@ -113,14 +115,17 @@ export function useRoom(code: string): RoomApi {
     }
 
     // Boucle de secours : heartbeat + réveil du moteur pour les timers.
+    // Même onglet en arrière-plan, on continue à se signaler : c'est ce qui
+    // évite d'être considéré parti après quelques secondes sur mobile.
     const loop = () => {
       const st = useRoomStore.getState().state;
-      const active =
-        st?.status === "en_cours" && !!st.round?.deadline && document.visibilityState === "visible";
+      const visible = document.visibilityState === "visible";
+      const playing = st?.status === "en_cours" && !!st.round?.deadline;
+      const delay = !visible ? POLL_HIDDEN_MS : playing ? POLL_ACTIVE_MS : POLL_IDLE_MS;
       timer = setTimeout(async () => {
-        if (document.visibilityState === "visible") await refresh();
+        await refresh();
         loop();
-      }, active ? POLL_ACTIVE_MS : POLL_IDLE_MS);
+      }, delay);
     };
     loop();
 

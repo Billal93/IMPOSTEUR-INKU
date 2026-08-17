@@ -559,11 +559,13 @@ async function cancelGame(ctx: Ctx): Promise<void> {
 export async function tick(ctx: Ctx): Promise<void> {
   if (ctx.room.status !== "en_cours" || !ctx.game || ctx.game.status !== "en_cours") return;
 
+  // Le quorum se juge sur les joueurs encore dans la fenêtre de reconnexion,
+  // pas sur le dernier heartbeat : sinon, poser son téléphone dix secondes
+  // suffirait à mettre la partie en pause.
   const active = activePlayers(ctx.players);
-  const connected = active.filter((p) => p.is_connected);
 
   /* --- Quorum : pause sous 3 joueurs, annulation au bout de 2 min --- */
-  if (connected.length < MIN_PLAYERS) {
+  if (active.length < MIN_PLAYERS) {
     if (!ctx.room.paused_at) {
       const now = new Date().toISOString();
       await db().from("rooms").update({ paused_at: now }).eq("id", ctx.room.id);
@@ -591,7 +593,7 @@ export async function tick(ctx: Ctx): Promise<void> {
 
   // Victoire imposteur s'il ne reste que 2 joueurs en lice dont lui.
   if (round.status !== "resultat") {
-    const alive = alivePlayers(ctx.players, round).filter((p) => p.is_connected);
+    const alive = alivePlayers(ctx.players, round);
     if (alive.length <= 2 && alive.some((p) => round.imposter_player_ids.includes(p.id))) {
       await finishRound(ctx, round.eliminated_player_id, "imposteur");
       return;
