@@ -3,7 +3,7 @@
 Jeu social anime/manga (type Undercover), édité par INKU.
 Stack : Next.js 16 (App Router, TS) · Tailwind v4 · Supabase (Postgres + Realtime + Auth anon) · Zustand · Vercel.
 
-- **Prod** : https://imposteur-mauve.vercel.app
+- **Prod** : https://jeu-imposteur.vercel.app
 - **Repo** : https://github.com/Billal93/imposteur (privé)
 - **Supabase** : projet `qggynwzcjdxrdwmqrqys`
 
@@ -33,7 +33,7 @@ Stack : Next.js 16 (App Router, TS) · Tailwind v4 · Supabase (Postgres + Realt
 | Types, lint | `npm run typecheck`, `npm run lint` |
 | Règles du jeu | `npm test` — 31 tests (ordre de passage, pool d'imposteurs, dépouillement, barème, codes de room, filtre anti-insultes, anti-triche, tolérance orthographique) |
 | Schéma + RLS + auth | `node scripts/check-db.mjs` |
-| Partie complète via l'API | `node scripts/e2e.mjs https://imposteur-mauve.vercel.app` — 40 assertions, 3 manches |
+| Partie complète via l'API | `node scripts/e2e.mjs https://jeu-imposteur.vercel.app` — 40 assertions, 3 manches |
 | Partie complète via l'UI | 3 onglets sur la prod : lobby synchronisé, rôles distincts, indice contenant le mot refusé, tour auto-passé, vote caché, devinette avec faute de frappe acceptée, scores |
 
 ## Reste à faire de ton côté
@@ -98,7 +98,9 @@ valeur non nulle : toute la mécanique de deadline est déjà branchée et test�
   téléphone quinze secondes suffit à mettre la partie en pause.
 - **Pénalité de tour passé : −1 point**, le cahier des charges dit « légère pénalité » sans chiffrer.
   Conséquence assumée : un score total peut devenir négatif.
-- **Durées non paramétrables** : vote 45 s, revote 25 s, devinette 30 s, écran de résultat 20 s.
+- **Nom de domaine.** `imposteur.vercel.app` et `imposteur-game.vercel.app` sont déjà pris par
+  d'autres comptes (le namespace `*.vercel.app` est mondial). La prod est sur
+  `jeu-imposteur.vercel.app`. Pour avoir exactement « imposteur », il faut un vrai nom de domaine.
 - **Garde-fou anti-boucle** : après 2 tours d'indices supplémentaires liés à des égalités
   successives, la manche se termine sans élimination et sans point.
 - **Reprise de place conditionnée au pseudo.** On ne réutilise le token stocké que si le pseudo saisi
