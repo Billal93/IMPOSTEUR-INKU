@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "./db";
 import { activePlayers, alivePlayers } from "./repo";
-import { computeScoreDeltas, getClues, type Ctx } from "./engine";
+import { getClues, scoreDeltasForRound, type Ctx } from "./engine";
 import type { PlayerRow, PublicClue, PublicPlayer, RoomState, WordPairRow, WordRow } from "@/lib/types";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 
@@ -115,7 +115,7 @@ export async function buildState(ctx: Ctx, me: PlayerRow): Promise<RoomState> {
           imposterGuessCorrect: round.imposter_guess_correct,
           winner: round.winner,
           tie: round.eliminated_player_id === null,
-          scoreDeltas: computeScoreDeltas(round, ctx.players, clues),
+          scoreDeltas: scoreDeltasForRound(round, ctx.players, clues),
         }
       : null,
   };

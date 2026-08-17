@@ -1,7 +1,8 @@
 import "server-only";
 import { db } from "./db";
 import { broadcastRoom } from "./broadcast";
-import { buildTurnOrder, drawPair, pickImposters } from "./draw";
+import { drawPair } from "./draw";
+import { buildTurnOrder, computeScoreDeltas, pickImposters, tallyTop } from "@/lib/rules";
 import {
   activePlayers,
   alivePlayers,
@@ -104,8 +105,9 @@ export async function startRound(
   if (!draw) return { error: "Aucune paire de mots disponible. Vérifie le seed de la base." };
 
   const recent = await getRecentImposterIds(ctx.game.id, 2);
-  const imposters = pickImposters(eligible, settings, recent);
-  const turnOrder = buildTurnOrder(eligible, previousOrder);
+  const eligibleIds = eligible.map((p) => p.id);
+  const imposters = pickImposters(eligibleIds, settings, recent);
+  const turnOrder = buildTurnOrder(eligibleIds, previousOrder);
 
   const { data: round } = await db()
     .from("rounds")
@@ -332,12 +334,7 @@ async function getVotes(roundId: string, voteRound: number): Promise<VoteRow[]> 
 async function tally(ctx: Ctx): Promise<void> {
   const round = ctx.round!;
   const votes = await getVotes(round.id, round.vote_round);
-
-  const counts = new Map<string, number>();
-  for (const v of votes) counts.set(v.target_player_id, (counts.get(v.target_player_id) ?? 0) + 1);
-
-  const max = Math.max(0, ...counts.values());
-  const top = [...counts.entries()].filter(([, n]) => n === max).map(([id]) => id);
+  const { max, top } = tallyTop(votes);
 
   // Personne n'a voté : on relance directement un tour d'indice.
   if (max === 0 || top.length === 0) {
@@ -475,7 +472,7 @@ async function finishRound(
   Object.assign(round, patch);
 
   const clues = await getClues(round.id);
-  const deltas = computeScoreDeltas(round, ctx.players, clues);
+  const deltas = scoreDeltasForRound(round, ctx.players, clues);
 
   await Promise.all(
     ctx.players
@@ -500,35 +497,19 @@ export async function getClues(roundId: string): Promise<ClueRow[]> {
   return (data ?? []) as ClueRow[];
 }
 
-/**
- * Barème : civils survivants +1, imposteur vainqueur +3, imposteur démasqué
- * sans deviner 0. Chaque tour passé coûte 1 point (pénalité légère).
- */
-export function computeScoreDeltas(
+/** Adapte les lignes de la base au barème pur de `@/lib/rules`. */
+export function scoreDeltasForRound(
   round: RoundRow,
   players: PlayerRow[],
   clues: ClueRow[],
 ): Record<string, number> {
-  const deltas: Record<string, number> = {};
-  const bump = (id: string, n: number) => {
-    deltas[id] = (deltas[id] ?? 0) + n;
-  };
-
-  const imposters = new Set(round.imposter_player_ids);
-  const active = players.filter((p) => !p.is_spectator);
-
-  if (round.winner === "civils") {
-    for (const p of active) {
-      if (!imposters.has(p.id) && p.id !== round.eliminated_player_id) bump(p.id, SCORE_CIVIL_WIN);
-    }
-  } else if (round.winner === "imposteur") {
-    for (const id of imposters) bump(id, SCORE_IMPOSTER_WIN);
-  }
-
-  for (const c of clues) if (c.passed) bump(c.player_id, SCORE_PASS_PENALTY);
-
-  for (const k of Object.keys(deltas)) if (deltas[k] === 0) delete deltas[k];
-  return deltas;
+  return computeScoreDeltas({
+    winner: round.winner,
+    imposterIds: round.imposter_player_ids,
+    eliminatedId: round.eliminated_player_id,
+    participantIds: players.filter((p) => !p.is_spectator).map((p) => p.id),
+    passedByPlayerId: clues.filter((c) => c.passed).map((c) => c.player_id),
+  });
 }
 
 /* ---------------------------------------------------------------- */

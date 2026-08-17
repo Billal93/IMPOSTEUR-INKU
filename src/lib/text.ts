@@ -154,6 +154,15 @@ export function checkClue(content: string, secretWord: string): ClueCheck {
 
   // Chaque token distinctif du mot secret est interdit tel quel (ou à 1 faute).
   const secretTokens = secret.split(" ").filter((t) => t.length >= 4);
+
+  // Comparaison sans les espaces : attrape les contournements du type
+  // « N.A.R.U.T.O » ou « naru to », que le découpage en mots laisse passer.
+  for (const st of secretTokens) {
+    if (clueFlat.includes(st)) {
+      return { ok: false, reason: "Ton indice contient le mot. Trouve un truc plus subtil." };
+    }
+  }
+
   const clueTokens = clue.split(" ").filter(Boolean);
   for (const st of secretTokens) {
     for (const ct of clueTokens) {

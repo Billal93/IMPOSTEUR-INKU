@@ -1,8 +1,8 @@
 import "server-only";
 import { db } from "./db";
-import { shuffle } from "./repo";
-import type { PlayerRow, WordPairRow, WordRow } from "@/lib/types";
-import { CATEGORIES, resolveImposterCount, type Category, type RoomSettings } from "@/lib/constants";
+import { shuffle } from "@/lib/rules";
+import type { WordPairRow, WordRow } from "@/lib/types";
+import { CATEGORIES, type Category, type RoomSettings } from "@/lib/constants";
 
 export type Draw = {
   pair: WordPairRow;
@@ -30,7 +30,7 @@ export async function drawPair(
     settings.categories?.length > 0 ? settings.categories : [...CATEGORIES];
 
   const attempts: { cats: Category[]; exclude: boolean; fallback: boolean }[] = [
-    // 1. catégories actives, hors paires déjà jouées
+    // 1. catégories actives, une par une, hors paires déjà jouées
     ...shuffle(active).map((c) => ({ cats: [c], exclude: true, fallback: false })),
     // 2. toutes les catégories actives confondues, hors paires déjà jouées
     { cats: active, exclude: true, fallback: false },
@@ -71,39 +71,4 @@ export async function drawPair(
   }
 
   return null;
-}
-
-/**
- * Choisit les imposteurs en évitant, si possible, ceux des 1–2 manches
- * précédentes (pool tournant). On relâche la contrainte si l'effectif est
- * trop faible pour la respecter.
- */
-export function pickImposters(
-  eligible: PlayerRow[],
-  settings: RoomSettings,
-  recentImposterIds: string[],
-): string[] {
-  const count = resolveImposterCount(eligible.length, settings);
-  const recent = new Set(recentImposterIds);
-
-  const fresh = eligible.filter((p) => !recent.has(p.id));
-  const pool = fresh.length >= count ? fresh : eligible;
-
-  return shuffle(pool)
-    .slice(0, count)
-    .map((p) => p.id);
-}
-
-/**
- * Ordre de passage : aléatoire à la manche 1, décalé d'un cran ensuite.
- * Les nouveaux arrivants sont ajoutés en fin d'ordre.
- */
-export function buildTurnOrder(eligible: PlayerRow[], previousOrder: string[] | null): string[] {
-  const ids = eligible.map((p) => p.id);
-  if (!previousOrder || previousOrder.length === 0) return shuffle(ids);
-
-  const kept = previousOrder.filter((id) => ids.includes(id));
-  const rotated = kept.length > 1 ? [...kept.slice(1), kept[0]] : kept;
-  const newcomers = ids.filter((id) => !kept.includes(id));
-  return [...rotated, ...shuffle(newcomers)];
 }
