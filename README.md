@@ -34,7 +34,8 @@ npm run dev
 1. Crée un projet Supabase.
 2. Exécute `supabase/migrations/0001_init.sql` dans le SQL Editor.
 3. Active l'authentification anonyme (Authentication > Providers > Anonymous).
-4. `npm run seed` importe `supabase/seed/word_pairs.json` (69 paires curées).
+4. `npm run seed` importe `supabase/seed/word_pairs.json` (67 paires curées).
+5. `node scripts/check-db.mjs` vérifie le schéma, les RLS et l'auth anonyme.
 
 ## Anti-triche
 
@@ -58,3 +59,7 @@ Tout ce qui peut être utilisé pour tricher reste côté serveur :
 | `npm run seed` | import des paires de mots |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript |
+| `npm test` | règles du jeu et utilitaires texte (31 tests) |
+| `node scripts/e2e.mjs <url>` | joue une partie complète contre l'API |
+| `node scripts/check-db.mjs` | schéma, RLS et auth |
+| `node scripts/push-env-to-vercel.mjs` | pousse `.env.local` vers Vercel |
