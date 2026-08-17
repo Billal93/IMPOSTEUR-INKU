@@ -6,7 +6,7 @@ import { Mascot } from "../Mascot";
 import { Badge, Button, Card, cx } from "../ui";
 import { ClueFeed } from "./ClueFeed";
 import { TimerBar, useCountdown } from "./Timer";
-import { PROXIMITY_LABELS, RESULT_SECONDS } from "@/lib/constants";
+import { PROXIMITY_LABELS } from "@/lib/constants";
 import type { PublicClue, RoomState } from "@/lib/types";
 import type { RoomApi } from "@/lib/useRoom";
 
@@ -107,9 +107,11 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
           ))}
         </div>
 
-        <div className="mt-4">
-          <TimerBar seconds={left} total={RESULT_SECONDS} />
-        </div>
+        {round.deadline && (
+          <div className="mt-4">
+            <TimerBar seconds={left} total={state.settings.resultSeconds} />
+          </div>
+        )}
       </Card>
 
       {/* Scores de la manche */}
@@ -159,6 +161,12 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
           onReport={report}
         />
       </Card>
+
+      {!state.me.isHost && !round.deadline && (
+        <p className="pb-4 text-center text-sm text-muted">
+          {lastRound ? "L'hôte va afficher le classement." : "L'hôte lance la manche suivante."}
+        </p>
+      )}
 
       {state.me.isHost && (
         <div className="fixed inset-x-0 bottom-0 border-t border-line bg-bg/85 p-4 backdrop-blur">

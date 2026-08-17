@@ -5,7 +5,6 @@ import { Avatar } from "../Avatar";
 import { Mascot } from "../Mascot";
 import { Button, Card, Input, Notice } from "../ui";
 import { TimerBar, useCountdown } from "./Timer";
-import { GUESS_SECONDS } from "@/lib/constants";
 import type { RoomState } from "@/lib/types";
 import type { RoomApi } from "@/lib/useRoom";
 
@@ -49,9 +48,11 @@ export function GuessView({ state, api, skew }: { state: RoomState; api: RoomApi
             ? "Dernière chance : devine le mot des civils et tu voles la victoire."
             : "Il a une seule tentative pour deviner votre mot. Croisez les doigts."}
         </p>
-        <div className="mt-4">
-          <TimerBar seconds={left} total={GUESS_SECONDS} />
-        </div>
+        {round.deadline && (
+          <div className="mt-4">
+            <TimerBar seconds={left} total={state.settings.guessSeconds} />
+          </div>
+        )}
       </Card>
 
       {isMe ? (

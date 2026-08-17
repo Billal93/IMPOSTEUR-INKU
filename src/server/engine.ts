@@ -14,18 +14,14 @@ import {
   getRoomByCode,
   isDue,
   patchRound,
-  secondsFromNow,
+  deadlineIn,
   syncPresence,
 } from "./repo";
 import type { ClueRow, GameRow, PlayerRow, RoomRow, RoundRow, VoteRow } from "@/lib/types";
 import {
-  GUESS_SECONDS,
   MIN_PLAYERS,
+  phaseDurationSeconds,
   PAUSE_CANCEL_MS,
-  RESULT_SECONDS,
-  REVOTE_SECONDS,
-  VOTE_SECONDS,
-  type RoomSettings,
 } from "@/lib/constants";
 import { isCloseEnough } from "@/lib/text";
 
@@ -119,7 +115,7 @@ export async function startRound(
       total_turns: settings.clueTurns,
       turn_index: 0,
       vote_round: 1,
-      deadline: secondsFromNow(settings.timerSeconds),
+      deadline: deadlineIn(settings.timerSeconds),
     })
     .select("*")
     .single();
@@ -192,7 +188,7 @@ async function skipUnplayable(ctx: Ctx): Promise<void> {
   const patch = {
     turn_index: next.index,
     turn_number: next.turn,
-    deadline: secondsFromNow(ctx.room.settings.timerSeconds),
+    deadline: deadlineIn(ctx.room.settings.timerSeconds),
   };
   await patchRound(round.id, { status: "indices", turn_index: round.turn_index }, patch);
   Object.assign(round, patch);
@@ -205,7 +201,7 @@ async function endCluePhase(ctx: Ctx): Promise<void> {
   const goDiscussion = settings.discussionSeconds > 0;
   const patch = {
     status: goDiscussion ? ("discussion" as const) : ("vote" as const),
-    deadline: secondsFromNow(goDiscussion ? settings.discussionSeconds : VOTE_SECONDS),
+    deadline: deadlineIn(goDiscussion ? settings.discussionSeconds : settings.voteSeconds),
   };
   if (await patchRound(round.id, { status: round.status }, patch)) Object.assign(round, patch);
 }
@@ -261,7 +257,7 @@ async function moveToNextTurn(ctx: Ctx): Promise<void> {
   const patch = {
     turn_index: next.index,
     turn_number: next.turn,
-    deadline: secondsFromNow(ctx.room.settings.timerSeconds),
+    deadline: deadlineIn(ctx.room.settings.timerSeconds),
   };
   if (
     await patchRound(
@@ -351,7 +347,7 @@ async function tally(ctx: Ctx): Promise<void> {
       vote_round: round.vote_round + 1,
       revote_candidate_ids: top,
       tie_count: 1,
-      deadline: secondsFromNow(REVOTE_SECONDS),
+      deadline: deadlineIn(ctx.room.settings.voteSeconds),
     };
     if (await patchRound(round.id, { status: round.status, vote_round: round.vote_round }, patch)) {
       Object.assign(round, patch);
@@ -383,7 +379,7 @@ async function extraClueTurn(ctx: Ctx): Promise<void> {
     vote_round: round.vote_round + 1,
     revote_candidate_ids: [],
     tie_count: 0,
-    deadline: secondsFromNow(ctx.room.settings.timerSeconds),
+    deadline: deadlineIn(ctx.room.settings.timerSeconds),
   };
   if (await patchRound(round.id, { status: round.status, vote_round: round.vote_round }, patch)) {
     Object.assign(round, patch);
@@ -403,7 +399,7 @@ async function eliminate(ctx: Ctx, playerId: string): Promise<void> {
     const patch = {
       status: "devinette" as const,
       eliminated_player_id: playerId,
-      deadline: secondsFromNow(GUESS_SECONDS),
+      deadline: deadlineIn(ctx.room.settings.guessSeconds),
     };
     if (await patchRound(round.id, { status: round.status }, patch)) Object.assign(round, patch);
     return;
@@ -458,7 +454,7 @@ async function finishRound(
     winner,
     imposter_guess: guess ?? null,
     imposter_guess_correct: guessCorrect ?? null,
-    deadline: secondsFromNow(RESULT_SECONDS),
+    deadline: deadlineIn(ctx.room.settings.resultSeconds),
     ended_at: new Date().toISOString(),
   };
 
@@ -556,7 +552,29 @@ async function cancelGame(ctx: Ctx): Promise<void> {
 /* Tick : fait avancer l'état quand une échéance est dépassée         */
 /* ---------------------------------------------------------------- */
 
+/**
+ * Échéance du lobby : `settings.lobbySeconds` à partir de la création de la
+ * room. Vaut `null` par défaut (sans limite) — on attend alors que l'hôte
+ * lance la partie lui-même.
+ */
+export function lobbyDeadline(room: RoomRow): string | null {
+  const secs = room.settings.lobbySeconds;
+  if (!secs || secs <= 0) return null;
+  return new Date(new Date(room.created_at).getTime() + secs * 1000).toISOString();
+}
+
 export async function tick(ctx: Ctx): Promise<void> {
+  // Lobby : lancement automatique seulement si une durée a été configurée.
+  if (ctx.room.status === "lobby") {
+    if (
+      isDue(lobbyDeadline(ctx.room)) &&
+      activePlayers(ctx.players).length >= MIN_PLAYERS
+    ) {
+      await startGame(ctx);
+    }
+    return;
+  }
+
   if (ctx.room.status !== "en_cours" || !ctx.game || ctx.game.status !== "en_cours") return;
 
   // Le quorum se juge sur les joueurs encore dans la fenêtre de reconnexion,
@@ -581,8 +599,8 @@ export async function tick(ctx: Ctx): Promise<void> {
     await db().from("rooms").update({ paused_at: null }).eq("id", ctx.room.id);
     ctx.room.paused_at = null;
     if (ctx.round && ctx.round.status !== "resultat") {
-      const secs = phaseSeconds(ctx.round.status, ctx.room.settings);
-      const patch = { deadline: secondsFromNow(secs) };
+      const secs = phaseDurationSeconds(ctx.round.status, ctx.room.settings);
+      const patch = { deadline: deadlineIn(secs) };
       await patchRound(ctx.round.id, { status: ctx.round.status }, patch);
       Object.assign(ctx.round, patch);
     }
@@ -590,6 +608,16 @@ export async function tick(ctx: Ctx): Promise<void> {
 
   const round = ctx.round;
   if (!round) return;
+
+  // Sans chrono sur la devinette, la manche resterait bloquée si l'imposteur
+  // démasqué s'en va sans répondre : on tranche à sa place.
+  if (round.status === "devinette" && round.eliminated_player_id) {
+    const caught = ctx.players.find((p) => p.id === round.eliminated_player_id);
+    if (!caught || caught.has_left) {
+      await finishRound(ctx, round.eliminated_player_id, "civils", undefined, false);
+      return;
+    }
+  }
 
   // Victoire imposteur s'il ne reste que 2 joueurs en lice dont lui.
   if (round.status !== "resultat") {
@@ -609,7 +637,7 @@ export async function tick(ctx: Ctx): Promise<void> {
       await autoPass(ctx);
       break;
     case "discussion": {
-      const patch = { status: "vote" as const, deadline: secondsFromNow(VOTE_SECONDS) };
+      const patch = { status: "vote" as const, deadline: deadlineIn(ctx.room.settings.voteSeconds) };
       if (await patchRound(round.id, { status: "discussion" }, patch)) Object.assign(round, patch);
       break;
     }
@@ -624,23 +652,6 @@ export async function tick(ctx: Ctx): Promise<void> {
     case "resultat":
       await nextRoundOrEnd(ctx);
       break;
-  }
-}
-
-function phaseSeconds(status: RoundRow["status"], settings: RoomSettings): number {
-  switch (status) {
-    case "indices":
-      return settings.timerSeconds;
-    case "discussion":
-      return settings.discussionSeconds || 30;
-    case "vote":
-      return VOTE_SECONDS;
-    case "revote":
-      return REVOTE_SECONDS;
-    case "devinette":
-      return GUESS_SECONDS;
-    default:
-      return RESULT_SECONDS;
   }
 }
 

@@ -29,8 +29,6 @@ export const CATEGORY_HINTS: Record<Category, string> = {
   oeuvres: "Mode expert : les titres eux-mêmes.",
 };
 
-export const EXPERT_CATEGORIES: Category[] = ["oeuvres"];
-
 export const PROXIMITY_TYPES = [
   "meme_univers",
   "meme_archetype",
@@ -52,22 +50,34 @@ export const PROXIMITY_LABELS: Record<ProximityType, string> = {
 export const MIN_PLAYERS = 3;
 export const MAX_PLAYERS = 12;
 
-export const ROUNDS_OPTIONS = [3, 5, 7, 0] as const; // 0 = illimité
-export const TIMER_OPTIONS = [15, 20, 30, 45] as const;
+export const ROUNDS_OPTIONS = [1, 3, 5, 7, 0] as const; // 0 = illimité
+
+/**
+ * Toutes les durées sont exprimées en secondes, et **0 veut dire « sans
+ * limite »**. Par défaut, aucune phase n'est chronométrée : les joueurs
+ * prennent le temps qu'ils veulent. Les timers restent branchés partout, il
+ * suffit de mettre une valeur non nulle pour les activer.
+ */
+export const NO_LIMIT = 0;
+
+export const TIMER_OPTIONS = [NO_LIMIT, 15, 20, 30, 45] as const;
+export const VOTE_OPTIONS = [NO_LIMIT, 30, 45, 60] as const;
+export const GUESS_OPTIONS = [NO_LIMIT, 20, 30, 45] as const;
+export const RESULT_OPTIONS = [NO_LIMIT, 15, 20, 30] as const;
+export const LOBBY_OPTIONS = [NO_LIMIT, 60, 120, 300] as const;
 export const CLUE_TURNS_OPTIONS = [1, 2, 3] as const;
 export const DISCUSSION_OPTIONS = [0, 30, 45, 60] as const; // 0 = pas de discussion
 
-export const DEFAULT_TIMER = 20;
-export const DEFAULT_CLUE_TURNS = 2;
-export const DEFAULT_ROUNDS = 5;
+/** Une partie minimale : un mot, une phase d'indices, un vote, sans chrono. */
+export const DEFAULT_ROUNDS = 1;
+export const DEFAULT_CLUE_TURNS = 1;
+export const DEFAULT_TIMER = NO_LIMIT;
+export const DEFAULT_VOTE = NO_LIMIT;
+export const DEFAULT_GUESS = NO_LIMIT;
+export const DEFAULT_RESULT = NO_LIMIT;
+export const DEFAULT_LOBBY = NO_LIMIT;
 export const DEFAULT_DISCUSSION = 0;
 export const DEFAULT_MAX_PLAYERS = 8;
-
-/** Durées des phases non paramétrables (secondes). */
-export const VOTE_SECONDS = 45;
-export const REVOTE_SECONDS = 25;
-export const GUESS_SECONDS = 30;
-export const RESULT_SECONDS = 20;
 
 /** Fenêtre de reconnexion avant d'être marqué « parti ». */
 export const DISCONNECT_GRACE_MS = 75_000;
@@ -79,22 +89,56 @@ export const PAUSE_CANCEL_MS = 120_000;
 export type RoomSettings = {
   maxPlayers: number;
   rounds: number; // 0 = illimité
-  timerSeconds: number;
   clueTurns: number;
-  discussionSeconds: number;
   categories: Category[];
   imposterOverride: number | null; // null = auto
+  /* Durées, en secondes. 0 = sans limite. */
+  lobbySeconds: number; // lancement auto du lobby
+  timerSeconds: number; // un tour d'indice
+  discussionSeconds: number; // 0 = pas de phase de discussion
+  voteSeconds: number;
+  guessSeconds: number;
+  resultSeconds: number; // 0 = l'hôte enchaîne à la main
 };
 
 export const DEFAULT_SETTINGS: RoomSettings = {
   maxPlayers: DEFAULT_MAX_PLAYERS,
   rounds: DEFAULT_ROUNDS,
-  timerSeconds: DEFAULT_TIMER,
   clueTurns: DEFAULT_CLUE_TURNS,
-  discussionSeconds: DEFAULT_DISCUSSION,
   categories: ["personnages", "lieux", "techniques", "objets", "creatures"],
   imposterOverride: null,
+  lobbySeconds: DEFAULT_LOBBY,
+  timerSeconds: DEFAULT_TIMER,
+  discussionSeconds: DEFAULT_DISCUSSION,
+  voteSeconds: DEFAULT_VOTE,
+  guessSeconds: DEFAULT_GUESS,
+  resultSeconds: DEFAULT_RESULT,
 };
+
+/** Durée de la phase courante, d'après les réglages de la room. */
+export function phaseDurationSeconds(
+  status: "indices" | "discussion" | "vote" | "revote" | "devinette" | "resultat",
+  settings: RoomSettings,
+): number {
+  switch (status) {
+    case "indices":
+      return settings.timerSeconds;
+    case "discussion":
+      return settings.discussionSeconds;
+    case "vote":
+    case "revote":
+      return settings.voteSeconds;
+    case "devinette":
+      return settings.guessSeconds;
+    case "resultat":
+      return settings.resultSeconds;
+  }
+}
+
+/** Libellé d'une durée pour l'UI. */
+export function durationLabel(seconds: number): string {
+  return seconds === NO_LIMIT ? "Sans limite" : `${seconds}s`;
+}
 
 /** 1 imposteur jusqu'à 6 joueurs, 2 à partir de 7. */
 export function autoImposterCount(playerCount: number): number {

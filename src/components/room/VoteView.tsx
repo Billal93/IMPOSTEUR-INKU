@@ -8,7 +8,6 @@ import { TimerBar, TimerRing, useCountdown } from "./Timer";
 import { ClueFeed } from "./ClueFeed";
 import { WordCard } from "./WordCard";
 import { IconCheck } from "../icons";
-import { REVOTE_SECONDS, VOTE_SECONDS } from "@/lib/constants";
 import type { RoomState } from "@/lib/types";
 import type { RoomApi } from "@/lib/useRoom";
 
@@ -19,7 +18,7 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
   const [error, setError] = useState<string | null>(null);
 
   const isRevote = round.status === "revote";
-  const total = isRevote ? REVOTE_SECONDS : VOTE_SECONDS;
+  const total = state.settings.voteSeconds;
 
   const candidates = state.players.filter((p) => {
     if (!round.alivePlayerIds.includes(p.id)) return false;
@@ -45,7 +44,7 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
     <div className="space-y-4 pb-24">
       <Card className="animate-[--animate-pop]">
         <div className="flex items-center gap-3">
-          <TimerRing seconds={left} total={total} />
+          {round.deadline && <TimerRing seconds={left} total={total} />}
           <div className="min-w-0 flex-1">
             <h2 className="font-display text-xl font-extrabold">
               {isRevote ? "Revote : égalité !" : "Qui est l'imposteur ?"}
@@ -57,9 +56,11 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
             </p>
           </div>
         </div>
-        <div className="mt-3">
-          <TimerBar seconds={left} total={total} />
-        </div>
+        {round.deadline && (
+          <div className="mt-3">
+            <TimerBar seconds={left} total={total} />
+          </div>
+        )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-muted">Ont voté :</span>

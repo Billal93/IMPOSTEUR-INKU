@@ -156,6 +156,8 @@ export type RoomState = {
     score: number;
   };
   pausedAt: string | null;
+  /** Lancement automatique du lobby — null quand il n'y a pas de limite. */
+  lobbyDeadline: string | null;
   serverTime: string;
   game: {
     id: string;

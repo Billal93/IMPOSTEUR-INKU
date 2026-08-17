@@ -63,7 +63,7 @@ export function CluesView({
 
       <Card>
         <div className="flex items-center gap-3">
-          <TimerRing seconds={left} total={state.settings.timerSeconds} />
+          {round.deadline && <TimerRing seconds={left} total={state.settings.timerSeconds} />}
           <div className="min-w-0 flex-1">
             {myTurn ? (
               <>
@@ -85,9 +85,11 @@ export function CluesView({
           </span>
         </div>
 
-        <div className="mt-3">
-          <TimerBar seconds={left} total={state.settings.timerSeconds} />
-        </div>
+        {round.deadline && (
+          <div className="mt-3">
+            <TimerBar seconds={left} total={state.settings.timerSeconds} />
+          </div>
+        )}
 
         {/* Ordre de passage */}
         <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">

@@ -28,7 +28,9 @@ export function RoomClient({ code }: { code: string }) {
   useEffect(() => reset, [code, reset]);
 
   const api = useRoom(code);
-  useDeadlineTick(code, state?.round?.deadline ?? null, skew);
+  // Une seule échéance est active à la fois : celle du lobby, ou celle de la
+  // phase en cours. `null` = pas de chrono, le moteur n'avance que sur action.
+  useDeadlineTick(code, state?.round?.deadline ?? state?.lobbyDeadline ?? null, skew);
 
   // Pas de session pour cette room : on renvoie vers l'écran « rejoindre ».
   useEffect(() => {
@@ -117,7 +119,7 @@ export function RoomClient({ code }: { code: string }) {
         {state.status === "terminee" ? (
           <EndView state={state} />
         ) : state.status === "lobby" || !round ? (
-          <LobbyView state={state} api={api} />
+          <LobbyView state={state} api={api} skew={skew} />
         ) : paused ? null : round.status === "indices" ? (
           <CluesView state={state} api={api} skew={skew} />
         ) : round.status === "discussion" ? (

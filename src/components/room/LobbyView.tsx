@@ -1,35 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, Notice, OptionGroup, cx } from "../ui";
+import { Button, Card, Notice } from "../ui";
 import { PlayerTile, ReadyDot } from "./PlayerTile";
+import { useCountdown } from "./Timer";
+import { Collapsible, GameSettingsForm, settingsSummary } from "../GameSettingsForm";
 import { IconCheck, IconCopy, IconUsers } from "../icons";
 import {
-  CATEGORIES,
   CATEGORY_LABELS,
-  CLUE_TURNS_OPTIONS,
-  DISCUSSION_OPTIONS,
-  MAX_PLAYERS,
   MIN_PLAYERS,
-  ROUNDS_OPTIONS,
-  TIMER_OPTIONS,
   autoImposterCount,
-  type Category,
+  durationLabel,
   type RoomSettings,
 } from "@/lib/constants";
 import type { RoomState } from "@/lib/types";
 import type { RoomApi } from "@/lib/useRoom";
 
-export function LobbyView({ state, api }: { state: RoomState; api: RoomApi }) {
+export function LobbyView({
+  state,
+  api,
+  skew,
+}: {
+  state: RoomState;
+  api: RoomApi;
+  skew: number;
+}) {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const autoStart = useCountdown(state.lobbyDeadline, skew);
 
   const isHost = state.me.isHost;
   const present = state.players.filter((p) => !p.hasLeft);
   const enough = present.length >= MIN_PLAYERS;
-  const allReady = present.every((p) => p.isReady || p.isHost);
+  const me = present.find((p) => p.id === state.me.id);
 
   async function copyCode() {
     try {
@@ -66,15 +70,6 @@ export function LobbyView({ state, api }: { state: RoomState; api: RoomApi }) {
     if (!res.ok) setError(res.error ?? null);
   }
 
-  function toggleCategory(c: Category) {
-    const has = state.settings.categories.includes(c);
-    const next = has
-      ? state.settings.categories.filter((x) => x !== c)
-      : [...state.settings.categories, c];
-    if (next.length === 0) return;
-    void patchSettings({ categories: next });
-  }
-
   async function start() {
     setBusy(true);
     setError(null);
@@ -107,6 +102,11 @@ export function LobbyView({ state, api }: { state: RoomState; api: RoomApi }) {
         <Button variant="secondary" size="sm" className="mt-3" onClick={share}>
           Partager le lien
         </Button>
+        {state.lobbyDeadline && (
+          <p className="mt-3 text-xs font-semibold text-muted">
+            Lancement auto dans {Math.ceil(autoStart)}s
+          </p>
+        )}
       </Card>
 
       {/* Joueurs */}
@@ -140,120 +140,27 @@ export function LobbyView({ state, api }: { state: RoomState; api: RoomApi }) {
         )}
       </Card>
 
-      {/* Réglages */}
+      {/* Réglages — repliés, comme à la création */}
       <Card>
-        <button
-          type="button"
-          onClick={() => setShowSettings((s) => !s)}
-          className="flex w-full items-center justify-between text-left"
+        <Collapsible
+          title={isHost ? "Paramètres avancés" : "Réglages de la partie"}
+          subtitle={settingsSummary(state.settings)}
         >
-          <h2 className="font-display text-lg font-bold">Réglages</h2>
-          <span className="text-sm font-semibold text-inku-600 dark:text-inku-300">
-            {showSettings ? "Replier" : isHost ? "Modifier" : "Voir"}
-          </span>
-        </button>
-
-        {!showSettings && (
-          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <Row label="Manches" value={state.settings.rounds === 0 ? "Illimité" : state.settings.rounds} />
-            <Row label="Temps / indice" value={`${state.settings.timerSeconds}s`} />
-            <Row label="Tours d'indices" value={state.settings.clueTurns} />
-            <Row
-              label="Discussion"
-              value={state.settings.discussionSeconds === 0 ? "Non" : `${state.settings.discussionSeconds}s`}
-            />
+          {!isHost && (
+            <p className="mb-4 text-xs text-muted">Seul l&apos;hôte peut les changer.</p>
+          )}
+          <GameSettingsForm
+            settings={state.settings}
+            onChange={patchSettings}
+            disabled={!isHost}
+          />
+          <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-4 text-sm">
             <Row label="Imposteurs" value={imposters} />
-            <Row label="Catégories" value={state.settings.categories.length} />
+            <Row label="Catégories" value={state.settings.categories.map((c) => CATEGORY_LABELS[c]).length} />
+            <Row label="Chrono indice" value={durationLabel(state.settings.timerSeconds)} />
+            <Row label="Chrono vote" value={durationLabel(state.settings.voteSeconds)} />
           </dl>
-        )}
-
-        {showSettings && (
-          <div className={cx("mt-4 space-y-5", !isHost && "pointer-events-none opacity-70")}>
-            {!isHost && (
-              <p className="text-xs text-muted">Seul l&apos;hôte peut changer les réglages.</p>
-            )}
-
-            <OptionGroup
-              label="Joueurs max"
-              value={state.settings.maxPlayers}
-              options={Array.from({ length: MAX_PLAYERS - MIN_PLAYERS + 1 }, (_, i) => {
-                const v = MIN_PLAYERS + i;
-                return { value: v, label: String(v) };
-              })}
-              onChange={(v) => patchSettings({ maxPlayers: v })}
-              disabled={!isHost}
-            />
-            <OptionGroup
-              label="Manches"
-              value={state.settings.rounds}
-              options={ROUNDS_OPTIONS.map((r) => ({
-                value: r,
-                label: r === 0 ? "Illimité" : String(r),
-              }))}
-              onChange={(v) => patchSettings({ rounds: v })}
-              disabled={!isHost}
-            />
-            <OptionGroup
-              label="Temps par indice"
-              value={state.settings.timerSeconds}
-              options={TIMER_OPTIONS.map((t) => ({ value: t, label: `${t}s` }))}
-              onChange={(v) => patchSettings({ timerSeconds: v })}
-              disabled={!isHost}
-            />
-            <OptionGroup
-              label="Tours d'indices"
-              value={state.settings.clueTurns}
-              options={CLUE_TURNS_OPTIONS.map((t) => ({ value: t, label: String(t) }))}
-              onChange={(v) => patchSettings({ clueTurns: v })}
-              disabled={!isHost}
-            />
-            <OptionGroup
-              label="Discussion libre"
-              value={state.settings.discussionSeconds}
-              options={DISCUSSION_OPTIONS.map((d) => ({ value: d, label: d === 0 ? "Non" : `${d}s` }))}
-              onChange={(v) => patchSettings({ discussionSeconds: v })}
-              disabled={!isHost}
-            />
-            <OptionGroup
-              label="Imposteurs"
-              hint="auto : 1 jusqu'à 6, 2 au-delà"
-              value={state.settings.imposterOverride ?? 0}
-              options={[
-                { value: 0, label: "Auto" },
-                { value: 1, label: "1" },
-                { value: 2, label: "2" },
-                { value: 3, label: "3" },
-              ]}
-              onChange={(v) => patchSettings({ imposterOverride: v === 0 ? null : v })}
-              disabled={!isHost}
-            />
-
-            <div>
-              <div className="mb-2 font-display text-sm font-bold">Catégories</div>
-              <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map((c) => {
-                  const on = state.settings.categories.includes(c);
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      disabled={!isHost}
-                      onClick={() => toggleCategory(c)}
-                      className={cx(
-                        "rounded-full px-3.5 py-2 text-sm font-semibold transition active:scale-95",
-                        on
-                          ? "brand-gradient text-white"
-                          : "border border-line bg-bg text-muted hover:text-ink",
-                      )}
-                    >
-                      {CATEGORY_LABELS[c]}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+        </Collapsible>
       </Card>
 
       {error && <Notice tone="error">{error}</Notice>}
@@ -269,17 +176,15 @@ export function LobbyView({ state, api }: { state: RoomState; api: RoomApi }) {
             <Button
               full
               size="lg"
-              variant={state.players.find((p) => p.id === state.me.id)?.isReady ? "secondary" : "primary"}
+              variant={me?.isReady ? "secondary" : "primary"}
               onClick={() => api.post("ready")}
             >
-              {state.players.find((p) => p.id === state.me.id)?.isReady
-                ? "Je ne suis plus prêt"
-                : "Je suis prêt"}
+              {me?.isReady ? "Je ne suis plus prêt" : "Je suis prêt"}
             </Button>
           )}
-          {isHost && enough && !allReady && (
+          {isHost && enough && (
             <p className="mt-2 text-center text-xs text-muted">
-              Tout le monde n&apos;est pas prêt, mais tu peux lancer quand tu veux.
+              Tu lances quand tu veux, personne n&apos;est chronométré.
             </p>
           )}
         </div>

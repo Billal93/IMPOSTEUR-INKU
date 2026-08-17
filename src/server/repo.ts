@@ -146,8 +146,12 @@ export async function patchRound(
   return (data?.length ?? 0) > 0;
 }
 
-export function secondsFromNow(seconds: number): string {
-  return new Date(Date.now() + seconds * 1000).toISOString();
+/**
+ * Échéance d'une phase. `0` (ou moins) veut dire « sans limite » : on renvoie
+ * alors `null`, et le moteur n'avancera que sur action des joueurs.
+ */
+export function deadlineIn(seconds: number): string | null {
+  return seconds > 0 ? new Date(Date.now() + seconds * 1000).toISOString() : null;
 }
 
 export function isDue(deadline: string | null): boolean {

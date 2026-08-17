@@ -24,6 +24,14 @@ export default function ReglesPage() {
           </p>
         </header>
 
+        <Section title="Le format">
+          <p>
+            Une partie, c&apos;est au minimum <b>un mot, un tour d&apos;indices et un vote</b>. Ça se
+            joue en quelques minutes. Si tu veux enchaîner, l&apos;hôte règle le nombre de manches
+            dans les paramètres avancés — chaque manche apporte un nouveau mot.
+          </p>
+        </Section>
+
         <Section title="Le principe">
           <p>
             Tout le monde reçoit le même mot tiré d&apos;un anime ou d&apos;un manga. Tout le monde,
@@ -40,7 +48,8 @@ export default function ReglesPage() {
           <Steps
             items={[
               "Tu reçois ton mot. Personne ne sait si c'est le même que le sien.",
-              "Chacun donne un indice, dans l'ordre, dans le temps imparti. Tu ne réponds pas à temps ? Tu passes ton tour (et tu perds un point).",
+              "Chacun donne un indice, dans l'ordre. Par défaut il n'y a aucun chrono : tu prends le temps qu'il te faut.",
+              "L'hôte peut activer des chronos dans les paramètres avancés. Dans ce cas, ne pas répondre à temps te fait passer ton tour (et te coûte un point).",
               "Selon les réglages, un ou plusieurs tours d'indices s'enchaînent, éventuellement suivis d'une discussion libre.",
               "Vote simultané : personne ne voit les votes des autres avant la révélation groupée.",
               "Le plus voté est éliminé et son rôle est révélé.",
@@ -71,6 +80,10 @@ export default function ReglesPage() {
           <Definition term="Égalité au vote">
             On revote entre les ex æquo uniquement. Si ça reste à égalité, personne n&apos;est
             éliminé et un tour d&apos;indice supplémentaire est joué.
+          </Definition>
+          <Definition term="Personne ne joue">
+            Sans chrono, la partie attend. L&apos;hôte peut activer des durées par phase dans les
+            paramètres avancés si ton groupe a tendance à s&apos;éterniser.
           </Definition>
           <Definition term="Tu perds la connexion">
             Tu as un peu plus d&apos;une minute pour revenir : ta place est gardée. Passé ce délai,

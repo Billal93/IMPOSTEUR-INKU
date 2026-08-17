@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "./db";
 import { activePlayers, alivePlayers } from "./repo";
-import { getClues, scoreDeltasForRound, type Ctx } from "./engine";
+import { getClues, lobbyDeadline, scoreDeltasForRound, type Ctx } from "./engine";
 import type { PlayerRow, PublicClue, PublicPlayer, RoomState, WordPairRow, WordRow } from "@/lib/types";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 
@@ -32,6 +32,7 @@ export async function buildState(ctx: Ctx, me: PlayerRow): Promise<RoomState> {
       score: me.score,
     },
     pausedAt: room.paused_at,
+    lobbyDeadline: room.status === "lobby" ? lobbyDeadline(room) : null,
     serverTime: new Date().toISOString(),
     game: game
       ? {

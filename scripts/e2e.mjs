@@ -40,7 +40,7 @@ const state = (p) => api(`/api/rooms/${p.code}/state`, { token: p.token });
 
 log(`\n▶ Cible : ${BASE}\n`);
 
-const TOTAL_ROUNDS = 3; // doit être une valeur autorisée : 3 / 5 / 7 / 0
+const TOTAL_ROUNDS = 3; // doit être une valeur autorisée : 1 / 3 / 5 / 7 / 0
 const settings = {
   maxPlayers: 4,
   rounds: TOTAL_ROUNDS,
@@ -317,6 +317,111 @@ check("un joueur retrouve sa place avec son token", rejoin.status === 409 || rej
 
 const stranger = await state({ code, token: "token-bidon-qui-nexiste-pas" });
 check("un token inconnu est rejeté", stranger.status === 403);
+
+/* ------------- 9. Partie par défaut : un seul mot, aucun chrono ------------- */
+
+log("\n▶ Partie par défaut (aucun réglage touché)\n");
+
+const solo = await api("/api/rooms", {
+  method: "POST",
+  body: { pseudo: "Hina", avatarId: "inku" }, // pas de settings du tout
+});
+check("room créée sans toucher aux réglages", solo.ok, solo.data.error);
+
+const soloCode = solo.data.code;
+const team = [{ name: "Hina", code: soloCode, token: solo.data.sessionToken, id: solo.data.playerId }];
+for (const name of ["Toru", "Meiko"]) {
+  const j = await api(`/api/rooms/${soloCode}/join`, {
+    method: "POST",
+    body: { pseudo: name, avatarId: "inku" },
+  });
+  if (j.ok) team.push({ name, code: soloCode, token: j.data.sessionToken, id: j.data.playerId });
+}
+for (const p of team) await state(p);
+
+const before = (await state(team[0])).data;
+check("par défaut, une seule manche", before.settings.rounds === 1, String(before.settings.rounds));
+check("par défaut, un seul tour d'indices", before.settings.clueTurns === 1);
+check(
+  "par défaut, aucune durée n'est imposée",
+  before.settings.timerSeconds === 0 &&
+    before.settings.voteSeconds === 0 &&
+    before.settings.guessSeconds === 0 &&
+    before.settings.resultSeconds === 0 &&
+    before.settings.lobbySeconds === 0,
+);
+check("par défaut, le lobby n'a pas d'échéance", before.lobbyDeadline === null);
+
+await api(`/api/rooms/${soloCode}/start`, { method: "POST", token: team[0].token });
+
+let solos = (await state(team[0])).data;
+check("la manche démarre sans échéance", solos.round?.deadline === null, String(solos.round?.deadline));
+
+for (let guard = 0; guard < 8 && solos.round?.status === "indices"; guard++) {
+  const current = team.find((p) => p.id === solos.round.currentPlayerId);
+  if (!current) break;
+  await api(`/api/rooms/${soloCode}/clue`, {
+    method: "POST",
+    token: current.token,
+    body: { content: `une piste de ${current.name}` },
+  });
+  solos = (await state(team[0])).data;
+}
+check("un seul tour d'indices puis le vote", solos.round?.status === "vote", solos.round?.status);
+check("le vote non plus n'a pas d'échéance", solos.round?.deadline === null);
+check("chacun a donné exactement un indice", (solos.round?.clues?.length ?? 0) === 3);
+
+for (const voter of team) {
+  await api(`/api/rooms/${soloCode}/vote`, {
+    method: "POST",
+    token: voter.token,
+    body: { targetId: team.find((p) => p.id !== voter.id).id },
+  });
+}
+solos = (await state(team[0])).data;
+if (solos.round?.status === "devinette") {
+  const caught = team.find((p) => p.id === solos.round.eliminatedPlayerId);
+  await api(`/api/rooms/${soloCode}/guess`, {
+    method: "POST",
+    token: caught.token,
+    body: { guess: "au hasard" },
+  });
+  solos = (await state(team[0])).data;
+}
+if (solos.round?.status === "revote") {
+  for (const voter of team) {
+    const cand = solos.round.revoteCandidateIds.find((id) => id !== voter.id);
+    if (cand) {
+      await api(`/api/rooms/${soloCode}/vote`, {
+        method: "POST",
+        token: voter.token,
+        body: { targetId: cand },
+      });
+    }
+  }
+  solos = (await state(team[0])).data;
+  if (solos.round?.status === "devinette") {
+    const caught = team.find((p) => p.id === solos.round.eliminatedPlayerId);
+    await api(`/api/rooms/${soloCode}/guess`, {
+      method: "POST",
+      token: caught.token,
+      body: { guess: "au hasard" },
+    });
+    solos = (await state(team[0])).data;
+  }
+}
+check("écran de résultat atteint", solos.round?.status === "resultat", solos.round?.status);
+check("sans chrono, le résultat attend l'hôte", solos.round?.deadline === null);
+
+const closed = await api(`/api/rooms/${soloCode}/next-round`, {
+  method: "POST",
+  token: team[0].token,
+});
+check("une manche suffit à finir la partie", closed.ok, closed.data.error);
+
+solos = (await state(team[0])).data;
+check("la partie est terminée après un seul mot", solos.status === "terminee", solos.status);
+check("classement présent", (solos.leaderboard?.length ?? 0) === 3);
 
 await sleep(200);
 log(`\n${failures === 0 ? "✓ Tout est vert" : `✖ ${failures} échec(s)`}\n`);
