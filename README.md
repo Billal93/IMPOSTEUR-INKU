@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IMPOSTEUR
 
-## Getting Started
+Jeu social multijoueur sur le thème anime / manga. Un mot pour tout le monde,
+un mot proche pour l'imposteur, des indices, un vote. Édité par **INKU**.
 
-First, run the development server:
+- 3 à 12 joueurs, room à 6 caractères, aucune installation
+- Pensé mobile d'abord, mode clair / sombre natif
+- Français décontracté, tutoiement partout
+
+## Stack
+
+| Couche | Choix |
+| --- | --- |
+| Frontend + API | Next.js (App Router, TypeScript) |
+| Style | Tailwind CSS v4 (design tokens INKU) |
+| Temps réel | Supabase Realtime (broadcast + presence par room) |
+| Base de données | Supabase Postgres |
+| Auth | Supabase Auth, mode anonyme |
+| Logique sensible | API routes Next.js, service role, jamais côté client |
+| État client | Zustand |
+| Hébergement | Vercel |
+
+## Démarrer en local
 
 ```bash
+npm install
+cp .env.example .env.local   # puis remplis les clés Supabase
+npm run seed                 # importe les paires de mots
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Base de données
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Crée un projet Supabase.
+2. Exécute `supabase/migrations/0001_init.sql` dans le SQL Editor.
+3. Active l'authentification anonyme (Authentication > Providers > Anonymous).
+4. `npm run seed` importe `supabase/seed/word_pairs.json` (69 paires curées).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Anti-triche
 
-## Learn More
+Tout ce qui peut être utilisé pour tricher reste côté serveur :
 
-To learn more about Next.js, take a look at the following resources:
+- le tirage de la paire et l'attribution des rôles se font dans les API routes ;
+- le canal Realtime ne transporte qu'un signal « l'état a changé » — chaque
+  client refetch ensuite `/api/rooms/[code]/state`, qui filtre selon son rôle ;
+- RLS refuse au client anonyme la lecture de `rounds`, `votes`, `words` et
+  `word_pairs` ; les joueurs passent par la vue `players_public`, sans les
+  tokens de session ;
+- les indices contenant le mot sont rejetés par le serveur, avec un bouton
+  « signaler » après la manche pour les cas plus subtils.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Commande | Effet |
+| --- | --- |
+| `npm run dev` | serveur de développement |
+| `npm run build` | build de production |
+| `npm run seed` | import des paires de mots |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript |

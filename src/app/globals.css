@@ -1,26 +1,155 @@
 @import "tailwindcss";
 
+/* Toggle clair/sombre piloté par la classe .dark sur <html> (voir ThemeToggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/* Design tokens INKU                                                  */
+/* ------------------------------------------------------------------ */
+@theme {
+  /* Violet de marque */
+  --color-inku-50: #f5f2ff;
+  --color-inku-100: #ede7ff;
+  --color-inku-200: #dcd2ff;
+  --color-inku-300: #c2adff;
+  --color-inku-400: #a37dff;
+  --color-inku-500: #8b5cf6;
+  --color-inku-600: #7c3aed;
+  --color-inku-700: #6b21d6;
+  --color-inku-800: #571baa;
+  --color-inku-900: #481a89;
+  --color-inku-950: #2c0d5c;
+
+  /* Rose d'accent (dégradé de marque rose -> violet) */
+  --color-encre-300: #f9a8d4;
+  --color-encre-400: #f472b6;
+  --color-encre-500: #ec4899;
+  --color-encre-600: #db2777;
+
+  /* Sémantique */
+  --color-civil: #10b981;
+  --color-imposteur: #f43f5e;
+  --color-warn: #f59e0b;
+
+  /* Rayons — cartes très arrondies, style INKU */
+  --radius-card: 1.25rem;
+  --radius-xl2: 1.75rem;
+
+  /* Typo */
+  --font-display: var(--font-display-src), "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  --font-sans: var(--font-body-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Animations */
+  --animate-pop: pop 0.28s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+  --animate-fade-up: fade-up 0.32s ease-out both;
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
+  --animate-shake: shake 0.4s ease-in-out both;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-inku-500) 55%, transparent); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Surfaces clair / sombre                                             */
+/* ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #faf9fc;
+  --bg-elevated: #ffffff;
+  --border: #ebe7f2;
+  --fg: #171422;
+  --fg-muted: #6b6580;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0e0d12;
+  --bg-elevated: #17161d;
+  --border: #272533;
+  --fg: #f2f0f7;
+  --fg-muted: #9d97b0;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--bg-elevated);
+  --color-line: var(--border);
+  --color-ink: var(--fg);
+  --color-muted: var(--fg-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+/* Titres : sans-serif bold arrondie */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Le dégradé de marque rose -> violet */
+.brand-gradient {
+  background-image: linear-gradient(100deg, var(--color-encre-500) 0%, var(--color-inku-600) 55%, var(--color-inku-500) 100%);
+}
+.brand-text {
+  background-image: linear-gradient(100deg, var(--color-encre-500) 0%, var(--color-inku-600) 60%, var(--color-inku-500) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Scrollbar discrète */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Focus visible cohérent */
+:focus-visible {
+  outline: 2px solid var(--color-inku-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
