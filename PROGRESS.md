@@ -69,6 +69,31 @@ limite »**. Le moteur sait vivre avec une échéance nulle — il n'avance alor
 joueurs (indice envoyé, vote complet, hôte qui enchaîne). Activer un chrono, c'est juste mettre une
 valeur non nulle : toute la mécanique de deadline est déjà branchée et testée.
 
+## Direction artistique : le design system fait autorité, et il est ailleurs
+
+Le vrai design system INKU vit sur **claude.ai/design**, projet « INKU Design System »
+(`fd72ca36-124f-46bf-8897-38ace4710a86`). Il a été construit *à partir de ce dépôt* et
+contient ce qui manquait ici : les polices de marque, l'artwork peint de la mascotte, la
+famille de logos, les tokens et les guidelines.
+
+**Le sens est : Claude Design → le dépôt.** Ne jamais lancer `/design-sync` depuis ici :
+la synchronisation réconcilie le projet distant avec le build local, donc tout ce que le
+build ne produit pas (`assets/`, `guidelines/`, `uploads/`, `ui_kits/`, les composants
+absents) serait supprimé. On importe, on ne pousse pas.
+
+Ce qui a été importé :
+
+| Quoi | D'où | Où c'est arrivé |
+| --- | --- | --- |
+| Clash Display (variable 200–700), Urbanist (4 graisses) | `TEAM INKU/INKU DA/01_FONT_A_INSTALLER` | `public/fonts/`, servi par `next/font/local` |
+| 11 expressions peintes de la mascotte | `INKU DA/03_MASCOTTE_INKU` | `public/mascots/inku-<expression>.png` |
+| Famille de logos (K violet/rose/blanc/noir, badge dégradé) | `INKU DA/02_LOGOTYPE` | `public/brand/` |
+| 12 avatars joueur | dérivés des expressions | `public/avatars/`, via `scripts/build-avatars.mjs` |
+| Tokens manquants | `tokens/colors.css` du design system | `globals.css` |
+
+Les sources locales sont dans `Downloads/TEAM INKU-.../TEAM INKU/` — les binaires ont été
+copiés de là plutôt que rapatriés par l'API, qui les aurait fait transiter en base64.
+
 ## Décisions à valider
 
 - **Tokens Tailwind en CSS plutôt qu'en `tailwind.config`.** Tailwind v4 (installé par
@@ -114,6 +139,14 @@ valeur non nulle : toute la mécanique de deadline est déjà branchée et test�
   (« je veux jouer uniquement du Naruto et du One Piece »), c'est un autre chantier : il faut taguer
   chaque paire avec son univers et ajouter le filtre au tirage. Dis-moi.
 - **Point 4 en attente**, rien n'a été anticipé dessus.
+- **Avatars : recoloration raster.** Faute de source vectorielle pour la mascotte, les 12
+  avatars sont des rotations de teinte au pixel, recadrées et réduites à 288 px. Nets
+  jusqu'à ~144 px, ce que couvre largement l'usage (20–116 px). Si tu récupères la
+  mascotte en SVG ou `.ai`, on refait ça en recoloration par calque, sans plafond de
+  taille — et les grands usages héros deviendront possibles.
+- **Le SVG paramétrique de la mascotte a été supprimé.** C'était un bouche-trou dessiné à
+  la main en attendant l'artwork réel ; il n'a plus de raison d'être maintenant que les
+  11 expressions peintes sont là.
 
 ## Limites connues
 
