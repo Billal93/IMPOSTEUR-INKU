@@ -36,9 +36,9 @@
   --radius-card: 1.25rem;
   --radius-xl2: 1.75rem;
 
-  /* Typo */
-  --font-display: var(--font-display-src), "Trebuchet MS", ui-rounded, system-ui, sans-serif;
-  --font-sans: var(--font-body-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Typo — voir --font-display-stack / --font-body-stack plus bas */
+  --font-display: var(--font-display-stack);
+  --font-sans: var(--font-body-stack);
 
   /* Animations */
   --animate-pop: pop 0.28s cubic-bezier(0.22, 1.2, 0.36, 1) both;
@@ -79,6 +79,16 @@
 /* ------------------------------------------------------------------ */
 /* Surfaces clair / sombre                                             */
 /* ------------------------------------------------------------------ */
+/*
+ * Clash Display pour l'affichage, Urbanist pour le texte courant. Les piles
+ * sont declarees ici, hors de @theme : ainsi elles sont toujours emises, que
+ * les classes utilitaires correspondantes soient utilisees ou non.
+ */
+:root {
+  --font-display-stack: var(--font-display-src), "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  --font-body-stack: var(--font-body-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 :root {
   --bg: #faf9fc;
   --bg-elevated: #ffffff;
@@ -119,7 +129,7 @@ html {
 body {
   background-color: var(--bg);
   color: var(--fg);
-  font-family: var(--font-sans);
+  font-family: var(--font-body-stack);
   line-height: 1.6;
   min-height: 100dvh;
   overscroll-behavior-y: none;
@@ -127,7 +137,7 @@ body {
 
 /* Titres : sans-serif bold arrondie */
 h1, h2, h3, .font-display {
-  font-family: var(--font-display);
+  font-family: var(--font-display-stack);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
