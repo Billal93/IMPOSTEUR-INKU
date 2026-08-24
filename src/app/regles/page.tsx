@@ -12,13 +12,9 @@ export default function ReglesPage() {
       <article className="mx-auto w-full max-w-2xl space-y-6 px-4 pt-6">
         <header className="text-center">
           <div className="mx-auto w-fit">
-            <Mascot
-              def={{ body: "#7C3AED", accent: "#EC4899", accessory: "mask" }}
-              size={72}
-              eyes="sneaky"
-            />
+            <Mascot expression="sneaky" size={88} />
           </div>
-          <h1 className="mt-3 font-display text-3xl font-extrabold">Les règles</h1>
+          <h1 className="mt-3 font-display text-3xl font-bold">Les règles</h1>
           <p className="mt-1 text-sm text-muted">
             Tu peux apprendre en jouant, mais voilà le détail.
           </p>

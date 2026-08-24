@@ -1,18 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Baloo_2, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { InkuWatermark } from "@/components/InkuWatermark";
 
-const display = Baloo_2({
+/** Clash Display — la face d'affichage de la marque. Axe variable 200→700. */
+const display = localFont({
   variable: "--font-display-src",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  src: [
+    { path: "../../public/fonts/ClashDisplay-Variable.woff2", weight: "200 700", style: "normal" },
+    { path: "../../public/fonts/ClashDisplay-Variable.woff", weight: "200 700", style: "normal" },
+  ],
   display: "swap",
 });
 
-const body = Inter({
+/** Urbanist — la face de texte courant. */
+const body = localFont({
   variable: "--font-body-src",
-  subsets: ["latin"],
+  src: [
+    { path: "../../public/fonts/Urbanist-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/Urbanist-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../public/fonts/Urbanist-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../../public/fonts/Urbanist-Bold.ttf", weight: "700", style: "normal" },
+  ],
   display: "swap",
 });
 

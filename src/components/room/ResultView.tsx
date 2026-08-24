@@ -38,18 +38,10 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
         )}
       >
         <div className="mx-auto w-fit">
-          <Mascot
-            def={{
-              body: civilsWin ? "#7C3AED" : "#6B21D6",
-              accent: civilsWin ? "#10B981" : "#F43F5E",
-              accessory: civilsWin ? "none" : "mask",
-            }}
-            size={76}
-            eyes={civilsWin ? "happy" : "sneaky"}
-          />
+          <Mascot expression={result.tie ? "neutral" : civilsWin ? "content" : "smug"} size={92} />
         </div>
 
-        <h2 className="mt-3 font-display text-2xl font-extrabold">
+        <h2 className="mt-3 font-display text-2xl font-bold">
           {result.tie
             ? "Personne d'éliminé"
             : civilsWin
@@ -81,11 +73,11 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
           <div className="rounded-2xl border border-line bg-surface p-3">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted">Mot des civils</p>
-            <p className="mt-1 font-display text-lg font-extrabold">{result.civilWord}</p>
+            <p className="mt-1 font-display text-lg font-bold">{result.civilWord}</p>
           </div>
           <div className="rounded-2xl border border-line bg-surface p-3">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted">Mot de l&apos;imposteur</p>
-            <p className="mt-1 font-display text-lg font-extrabold">{result.imposterWord}</p>
+            <p className="mt-1 font-display text-lg font-bold">{result.imposterWord}</p>
           </div>
         </div>
         <p className="mt-2 text-xs text-muted">
@@ -139,7 +131,7 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
                       {delta > 0 ? `+${delta}` : delta}
                     </span>
                   )}
-                  <span className="w-8 text-right font-display text-sm font-extrabold tabular-nums">
+                  <span className="w-8 text-right font-display text-sm font-bold tabular-nums">
                     {p.score}
                   </span>
                 </li>

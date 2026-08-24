@@ -159,28 +159,49 @@ export const SCORE_PASS_PENALTY = -1;
 
 /* ------------------------------ Avatars ------------------------------ */
 
+/** Les 11 expressions peintes de la mascotte (`public/mascots/`). */
+export const EXPRESSIONS = [
+  "determined",
+  "smug",
+  "sneaky",
+  "angry",
+  "shouting",
+  "excited",
+  "content",
+  "nervous",
+  "suspicious",
+  "sad",
+  "neutral",
+] as const;
+
+export type Expression = (typeof EXPRESSIONS)[number];
+
 export type AvatarDef = {
   id: string;
   name: string;
-  body: string; // couleur principale de la pieuvre
-  accent: string; // couleur de l'accessoire
-  accessory: "none" | "mask" | "cape" | "cap" | "glasses" | "bow" | "headband" | "horns";
+  expression: Expression;
 };
 
-/** Galerie de variantes de la mascotte INKU (pieuvre pourpre). */
+/**
+ * Les 12 avatars joueur (`public/avatars/`, générés par
+ * `scripts/build-avatars.mjs`). On reconnaît quelqu'un à sa tête d'abord, à sa
+ * couleur ensuite : chaque avatar est une expression différente du même
+ * personnage. `neutral` sert deux fois — clair pour Neutre, presque noir pour
+ * Encre — le seul couple où la couleur seule porte l'identité.
+ */
 export const AVATARS: AvatarDef[] = [
-  { id: "inku", name: "Inku", body: "#7C3AED", accent: "#EC4899", accessory: "none" },
-  { id: "masque", name: "Masqué", body: "#6B21D6", accent: "#F43F5E", accessory: "mask" },
-  { id: "cape", name: "Caped", body: "#8B5CF6", accent: "#EC4899", accessory: "cape" },
-  { id: "casquette", name: "Casquette", body: "#A37DFF", accent: "#10B981", accessory: "cap" },
-  { id: "lunettes", name: "Lunettes", body: "#571BAA", accent: "#38BDF8", accessory: "glasses" },
-  { id: "noeud", name: "Nœud", body: "#F472B6", accent: "#7C3AED", accessory: "bow" },
-  { id: "bandeau", name: "Bandeau", body: "#4F46E5", accent: "#F59E0B", accessory: "headband" },
-  { id: "cornes", name: "Cornes", body: "#DB2777", accent: "#FDE68A", accessory: "horns" },
-  { id: "menthe", name: "Menthe", body: "#10B981", accent: "#7C3AED", accessory: "none" },
-  { id: "azur", name: "Azur", body: "#0EA5E9", accent: "#EC4899", accessory: "glasses" },
-  { id: "sable", name: "Sable", body: "#F59E0B", accent: "#7C3AED", accessory: "cap" },
-  { id: "encre", name: "Encre", body: "#2C0D5C", accent: "#EC4899", accessory: "mask" },
+  { id: "inku", name: "Inku", expression: "determined" },
+  { id: "fier", name: "Fier", expression: "smug" },
+  { id: "sournois", name: "Sournois", expression: "sneaky" },
+  { id: "enerve", name: "Énervé", expression: "angry" },
+  { id: "criant", name: "Criant", expression: "shouting" },
+  { id: "excite", name: "Excité", expression: "excited" },
+  { id: "content", name: "Content", expression: "content" },
+  { id: "nerveux", name: "Nerveux", expression: "nervous" },
+  { id: "suspicieux", name: "Suspicieux", expression: "suspicious" },
+  { id: "triste", name: "Triste", expression: "sad" },
+  { id: "neutre", name: "Neutre", expression: "neutral" },
+  { id: "encre", name: "Encre", expression: "neutral" },
 ];
 
 export const DEFAULT_AVATAR = AVATARS[0].id;

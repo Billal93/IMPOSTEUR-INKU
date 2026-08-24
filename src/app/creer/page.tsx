@@ -67,7 +67,7 @@ export default function CreerPage() {
 
       <div className="mx-auto w-full max-w-xl space-y-4 px-4 pt-6">
         <div>
-          <h1 className="font-display text-3xl font-extrabold">Créer une partie</h1>
+          <h1 className="font-display text-3xl font-bold">Créer une partie</h1>
           <p className="mt-1 text-sm text-muted">
             Choisis un pseudo, on te donne un code à partager. C&apos;est tout.
           </p>

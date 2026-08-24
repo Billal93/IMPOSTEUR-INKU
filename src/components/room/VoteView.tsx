@@ -46,7 +46,7 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
         <div className="flex items-center gap-3">
           {round.deadline && <TimerRing seconds={left} total={total} />}
           <div className="min-w-0 flex-1">
-            <h2 className="font-display text-xl font-extrabold">
+            <h2 className="font-display text-xl font-bold">
               {isRevote ? "Revote : égalité !" : "Qui est l'imposteur ?"}
             </h2>
             <p className="text-sm text-muted">

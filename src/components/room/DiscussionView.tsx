@@ -16,7 +16,7 @@ export function DiscussionView({ state, skew }: { state: RoomState; skew: number
         <div className="flex items-center gap-3">
           <TimerRing seconds={left} total={state.settings.discussionSeconds || 30} />
           <div>
-            <h2 className="font-display text-xl font-extrabold">Discussion libre</h2>
+            <h2 className="font-display text-xl font-bold">Discussion libre</h2>
             <p className="text-sm text-muted">
               Parlez-vous en vrai. Accusez, défendez-vous, mentez. Le vote arrive.
             </p>

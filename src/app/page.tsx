@@ -10,14 +10,10 @@ export default function Home() {
 
       <section className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 pb-24 pt-10 text-center sm:pt-16">
         <div className="animate-[--animate-float]">
-          <Mascot
-            def={{ body: "#7C3AED", accent: "#EC4899", accessory: "mask" }}
-            size={116}
-            eyes="sneaky"
-          />
+          <Mascot expression="sneaky" size={140} priority />
         </div>
 
-        <h1 className="mt-6 font-display text-5xl font-extrabold tracking-tight sm:text-7xl">
+        <h1 className="mt-6 font-display text-6xl font-bold tracking-tight sm:text-8xl">
           <span className="brand-text">IMPOSTEUR</span>
         </h1>
 

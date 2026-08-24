@@ -42,8 +42,8 @@ export function PlayerTile({
       <Avatar
         avatarId={player.avatarId}
         size={40}
-        ring={selected ? "inku" : active ? "inku" : "none"}
-        eyes={player.hasLeft ? "sneaky" : "normal"}
+        ring={selected || active ? "inku" : "none"}
+        className={player.hasLeft ? "grayscale" : undefined}
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">

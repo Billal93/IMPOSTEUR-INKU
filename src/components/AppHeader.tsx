@@ -26,7 +26,7 @@ export function AppHeader({
             <IconArrowLeft size={18} />
           </Link>
         )}
-        <Link href="/" className="font-display text-xl font-extrabold tracking-tight">
+        <Link href="/" className="font-display text-xl font-bold tracking-tight">
           <span className="brand-text">IMPOSTEUR</span>
         </Link>
       </div>

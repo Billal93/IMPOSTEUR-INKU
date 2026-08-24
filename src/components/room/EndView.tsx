@@ -16,13 +16,9 @@ export function EndView({ state }: { state: RoomState }) {
     <div className="space-y-4 pb-28">
       <Card className="animate-[--animate-pop] text-center">
         <div className="mx-auto w-fit animate-[--animate-float]">
-          <Mascot
-            def={{ body: "#7C3AED", accent: "#EC4899", accessory: "cape" }}
-            size={92}
-            eyes="happy"
-          />
+          <Mascot expression="content" size={112} />
         </div>
-        <h2 className="mt-3 font-display text-2xl font-extrabold">Partie terminée</h2>
+        <h2 className="mt-3 font-display text-2xl font-bold">Partie terminée</h2>
         {top && (
           <p className="mt-1 text-sm text-muted">
             <span className="font-display font-bold text-ink">{top.pseudo}</span> rafle la mise avec{" "}
@@ -55,7 +51,7 @@ export function EndView({ state }: { state: RoomState }) {
             >
               <span
                 className={cx(
-                  "grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-xs font-extrabold",
+                  "grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-xs font-bold",
                   i === 0 ? "bg-amber-400 text-white" : "bg-black/5 text-muted dark:bg-white/10",
                 )}
               >
@@ -65,7 +61,7 @@ export function EndView({ state }: { state: RoomState }) {
               <span className="min-w-0 flex-1 truncate font-display text-[15px] font-bold">
                 {row.pseudo}
               </span>
-              <span className="font-display text-lg font-extrabold tabular-nums">{row.score}</span>
+              <span className="font-display text-lg font-bold tabular-nums">{row.score}</span>
             </li>
           ))}
         </ol>

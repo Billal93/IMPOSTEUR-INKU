@@ -73,7 +73,7 @@ export function TimerRing({
       </svg>
       <span
         className={cx(
-          "absolute font-display text-sm font-extrabold tabular-nums",
+          "absolute font-display text-sm font-bold tabular-nums",
           urgent ? "text-rose-500" : "text-ink",
         )}
       >

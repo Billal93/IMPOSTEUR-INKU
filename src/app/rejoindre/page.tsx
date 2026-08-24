@@ -116,7 +116,7 @@ function RejoindreInner() {
 
       <div className="mx-auto w-full max-w-xl space-y-4 px-4 pt-6">
         <div>
-          <h1 className="font-display text-3xl font-extrabold">Rejoindre</h1>
+          <h1 className="font-display text-3xl font-bold">Rejoindre</h1>
           <p className="mt-1 text-sm text-muted">Demande le code à celui qui a créé la partie.</p>
         </div>
 
@@ -134,7 +134,7 @@ function RejoindreInner() {
             autoComplete="off"
             spellCheck={false}
             maxLength={6}
-            className="h-16 w-full rounded-2xl border border-line bg-bg text-center font-display text-3xl font-extrabold uppercase tracking-[0.4em] text-ink placeholder:text-muted/40 focus:border-inku-400 focus:outline-none focus:ring-4 focus:ring-inku-500/15"
+            className="h-16 w-full rounded-2xl border border-line bg-bg text-center font-display text-3xl font-bold uppercase tracking-[0.32em] text-ink placeholder:text-muted/40 focus:border-inku-400 focus:outline-none focus:ring-4 focus:ring-inku-500/15"
           />
 
           {peek && (

@@ -87,7 +87,7 @@ export function LobbyView({
       <Card className="animate-[--animate-pop] text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">Code de la room</p>
         <div className="mt-2 flex items-center justify-center gap-3">
-          <span className="font-display text-4xl font-extrabold tracking-[0.3em] text-ink">
+          <span className="font-display text-4xl font-bold tracking-[0.24em] text-ink">
             {state.code}
           </span>
           <button

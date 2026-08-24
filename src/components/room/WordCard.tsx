@@ -51,7 +51,7 @@ export function WordCard({
           </Badge>
           <p
             className={cx(
-              "mt-3 font-display text-3xl font-extrabold leading-tight transition",
+              "mt-3 font-display text-3xl font-bold leading-tight transition",
               hidden && "select-none blur-md",
             )}
           >
@@ -61,16 +61,7 @@ export function WordCard({
             {CATEGORY_LABELS[category]} · appuie pour {hidden ? "révéler" : "masquer"}
           </p>
         </div>
-        <Mascot
-          def={{
-            body: isImposter ? "#6B21D6" : "#7C3AED",
-            accent: isImposter ? "#F43F5E" : "#EC4899",
-            accessory: isImposter ? "mask" : "none",
-          }}
-          size={58}
-          eyes={isImposter ? "sneaky" : "happy"}
-          className="shrink-0"
-        />
+        <Mascot expression={isImposter ? "sneaky" : "determined"} size={64} className="shrink-0" />
       </div>
 
       {isImposter && (

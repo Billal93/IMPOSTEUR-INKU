@@ -27,6 +27,7 @@
   --color-encre-600: #db2777;
 
   /* Sémantique */
+  --color-ink-outline: #2b1046; /* le trait de l'artwork INKU */
   --color-civil: #10b981;
   --color-imposteur: #f43f5e;
   --color-warn: #f59e0b;
@@ -81,27 +82,34 @@
 :root {
   --bg: #faf9fc;
   --bg-elevated: #ffffff;
+  --bg-sunken: #f5f2ff;
   --border: #ebe7f2;
   --fg: #171422;
   --fg-muted: #6b6580;
+  /* Teinte d'accent douce : fond des puces actives, encarts, tuiles choisies. */
+  --accent-soft: #f5f2ff;
   color-scheme: light;
 }
 
 .dark {
   --bg: #0e0d12;
   --bg-elevated: #17161d;
+  --bg-sunken: #1e1c27;
   --border: #272533;
   --fg: #f2f0f7;
   --fg-muted: #9d97b0;
+  --accent-soft: #231343;
   color-scheme: dark;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--bg-elevated);
+  --color-sunken: var(--bg-sunken);
   --color-line: var(--border);
   --color-ink: var(--fg);
   --color-muted: var(--fg-muted);
+  --color-accent-soft: var(--accent-soft);
 }
 
 html {
@@ -112,6 +120,7 @@ body {
   background-color: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
+  line-height: 1.6;
   min-height: 100dvh;
   overscroll-behavior-y: none;
 }
