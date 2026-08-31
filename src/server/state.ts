@@ -92,7 +92,6 @@ export async function buildState(ctx: Ctx, me: PlayerRow): Promise<RoomState> {
     currentPlayerId: round.status === "indices" ? round.turn_order[round.turn_index] ?? null : null,
     deadline: round.deadline,
     myWord: me.is_spectator ? null : iAmImposter ? words?.imposter ?? null : words?.civil ?? null,
-    iAmImposter: me.is_spectator ? false : iAmImposter,
     category: words?.category ?? "personnages",
     clues: publicClues,
     // On ne révèle QUE la liste de ceux qui ont voté, jamais pour qui :

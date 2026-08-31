@@ -109,7 +109,21 @@ async function snapshot() {
 
 let views = await snapshot();
 const words = new Set(views.map((v) => v.s.round?.myWord));
-const imposters = views.filter((v) => v.s.round?.iAmImposter);
+
+// Personne — pas même le client — ne sait qui est l'imposteur : le serveur ne
+// renvoie plus jamais ce rôle en clair. Pour un test qui simule PLUSIEURS
+// joueurs à la fois (donc omniscient par construction), la seule façon
+// externe de repérer l'imposteur est de regrouper par mot reçu et de
+// regarder qui est minoritaire — exactement ce qu'un vrai groupe de joueurs
+// devrait déduire par le jeu, pas lire dans une réponse API.
+function findImposters(views) {
+  const counts = new Map();
+  for (const v of views) counts.set(v.s.round?.myWord, (counts.get(v.s.round?.myWord) ?? 0) + 1);
+  const minority = [...counts.entries()].sort((a, b) => a[1] - b[1])[0]?.[0];
+  return views.filter((v) => v.s.round?.myWord === minority);
+}
+
+const imposters = findImposters(views);
 check("chaque joueur a reçu un mot", views.every((v) => !!v.s.round?.myWord));
 check("il y a exactement 1 imposteur à 3 joueurs", imposters.length === 1);
 check("l'imposteur a un mot différent des civils", words.size === 2, [...words].join(" / "));
@@ -118,6 +132,10 @@ const meView = views[0].s;
 check(
   "le rôle des autres n'est jamais exposé",
   JSON.stringify(meView).includes("imposter_player_ids") === false,
+);
+check(
+  "le rôle de PERSONNE n'est exposé, pas même le sien (Undercover classique)",
+  views.every((v) => !JSON.stringify(v.s.round).includes("iAmImposter") && !JSON.stringify(v.s.round).includes("imposter_player_ids")),
 );
 
 /* --------------------------- 3. Tour d'indices --------------------------- */

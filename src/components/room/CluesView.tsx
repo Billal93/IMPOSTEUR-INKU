@@ -56,7 +56,6 @@ export function CluesView({
     <div className="space-y-4 pb-40">
       <WordCard
         word={round.myWord}
-        isImposter={round.iAmImposter}
         category={round.category}
         spectator={state.me.isSpectator}
       />

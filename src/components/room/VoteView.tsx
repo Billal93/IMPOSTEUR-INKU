@@ -137,7 +137,6 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
 
       <WordCard
         word={round.myWord}
-        isImposter={round.iAmImposter}
         category={round.category}
         spectator={state.me.isSpectator}
       />

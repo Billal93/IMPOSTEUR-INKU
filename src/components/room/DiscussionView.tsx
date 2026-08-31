@@ -39,7 +39,6 @@ export function DiscussionView({ state, skew }: { state: RoomState; skew: number
 
       <WordCard
         word={round.myWord}
-        isImposter={round.iAmImposter}
         category={round.category}
         spectator={state.me.isSpectator}
       />

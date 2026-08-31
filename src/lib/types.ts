@@ -175,8 +175,6 @@ export type RoomState = {
     deadline: string | null;
     /** Mon mot — le mot civil, ou le mot proche si je suis imposteur. */
     myWord: string | null;
-    /** Vrai seulement pour moi, jamais pour les autres joueurs. */
-    iAmImposter: boolean;
     category: Category;
     clues: PublicClue[];
     /** Ids de ceux qui ont déjà voté (jamais la cible avant révélation). */

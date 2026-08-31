@@ -9,15 +9,19 @@ import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 /**
  * Le mot du joueur. Volontairement masquable d'un tap : on joue souvent
  * côte à côte, il faut pouvoir cacher son écran vite fait.
+ *
+ * Important : cette carte ne prend jamais de prop de rôle. Dans Undercover,
+ * personne ne sait s'il tient le mot majoritaire ou le mot proche — l'UI ne
+ * doit donc afficher aucun indice visuel différent selon le rôle (même
+ * badge, même mascotte, même style, pour tout le monde). Le serveur choisit
+ * déjà le bon mot ; ne réintroduis jamais ici un signal de rôle.
  */
 export function WordCard({
   word,
-  isImposter,
   category,
   spectator,
 }: {
   word: string | null;
-  isImposter: boolean;
   category: Category;
   spectator?: boolean;
 }) {
@@ -37,18 +41,11 @@ export function WordCard({
     <button
       type="button"
       onClick={() => setHidden((h) => !h)}
-      className={cx(
-        "relative w-full overflow-hidden rounded-[--radius-card] border p-5 text-left transition active:scale-[0.99]",
-        isImposter
-          ? "border-rose-300 bg-gradient-to-br from-rose-50 to-inku-50 dark:border-rose-900 dark:from-rose-950/50 dark:to-inku-950/50"
-          : "border-inku-200 bg-gradient-to-br from-inku-50 to-white dark:border-inku-900 dark:from-inku-950/60 dark:to-surface",
-      )}
+      className="relative w-full overflow-hidden rounded-[--radius-card] border border-inku-200 bg-gradient-to-br from-inku-50 to-white p-5 text-left transition active:scale-[0.99] dark:border-inku-900 dark:from-inku-950/60 dark:to-surface"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Badge tone={isImposter ? "imposteur" : "inku"}>
-            {isImposter ? "Tu es l'imposteur" : "Ton mot"}
-          </Badge>
+          <Badge tone="inku">Ton mot</Badge>
           <p
             className={cx(
               "mt-3 font-display text-3xl font-bold leading-tight transition",
@@ -61,14 +58,8 @@ export function WordCard({
             {CATEGORY_LABELS[category]} · appuie pour {hidden ? "révéler" : "masquer"}
           </p>
         </div>
-        <Mascot expression={isImposter ? "sneaky" : "determined"} size={64} className="shrink-0" />
+        <Mascot expression="determined" size={64} className="shrink-0" />
       </div>
-
-      {isImposter && (
-        <p className="mt-3 rounded-2xl bg-rose-100/70 px-3 py-2 text-xs leading-relaxed text-rose-800 dark:bg-rose-950/60 dark:text-rose-200">
-          Les autres ont un mot proche du tien, mais pas le même. Fonds-toi dans la masse.
-        </p>
-      )}
     </button>
   );
 }
