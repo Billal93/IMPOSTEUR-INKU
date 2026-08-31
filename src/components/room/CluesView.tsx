@@ -108,7 +108,7 @@ export function CluesView({
                 </span>
                 {isCurrent ? (
                   <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-encre-500/40 bg-encre-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-encre-600 dark:text-encre-400">
-                    <span className="h-1.5 w-1.5 animate-[--animate-turn-pulse] rounded-full bg-encre-500" />
+                    <span className="h-1.5 w-1.5 animate-turn-pulse rounded-full bg-encre-500" />
                     à {isMe ? "toi" : "lui"}
                   </span>
                 ) : isDone ? (

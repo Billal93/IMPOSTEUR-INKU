@@ -241,7 +241,7 @@ export function Collapsible({
           ⌄
         </span>
       </button>
-      {open && <div className="mt-5 animate-[--animate-fade-up]">{children}</div>}
+      {open && <div className="mt-5 animate-fade-up">{children}</div>}
     </div>
   );
 }

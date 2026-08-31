@@ -54,7 +54,7 @@ export function ClueFeed({
                 return (
                   <li
                     key={`${c.playerId}-${c.turnNumber}`}
-                    className="flex animate-[--animate-fade-up] items-start gap-2.5"
+                    className="flex animate-fade-up items-start gap-2.5"
                     style={{ animationDelay: `${i * 40}ms` }}
                   >
                     {!rightTail && <Avatar avatarId={p.avatarId} size={30} className="mt-0.5 shrink-0" />}

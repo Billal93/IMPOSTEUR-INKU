@@ -34,7 +34,7 @@ export function PlayerTile({
         selected
           ? "border-inku-500 bg-inku-50 dark:bg-inku-950/70"
           : "border-line bg-surface",
-        active && !selected && "animate-[--animate-pulse-ring] border-inku-400",
+        active && !selected && "animate-pulse-ring border-inku-400",
         dimmed && "opacity-45",
         onClick && "hover:-translate-y-0.5 hover:border-inku-300 active:scale-[0.98] dark:hover:border-inku-700",
       )}

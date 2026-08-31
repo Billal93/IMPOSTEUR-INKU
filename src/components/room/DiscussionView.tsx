@@ -12,7 +12,7 @@ export function DiscussionView({ state, skew }: { state: RoomState; skew: number
 
   return (
     <div className="space-y-4 pb-24">
-      <div className="ink-card radius-blob-c relative animate-[--animate-pop] overflow-hidden p-5">
+      <div className="ink-card radius-blob-c relative animate-pop overflow-hidden p-5">
         <div aria-hidden="true" className="ink-blob -right-7 -top-5 h-20 w-24" />
         <div className="relative flex items-center gap-3">
           <TimerRing seconds={left} total={state.settings.discussionSeconds || 30} />

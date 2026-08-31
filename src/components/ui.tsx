@@ -239,7 +239,7 @@ export function Notice({
       "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200",
   }[tone];
   return (
-    <div className={cx("animate-[--animate-fade-in] rounded-2xl border px-4 py-3 text-sm", tones)}>
+    <div className={cx("animate-fade-in rounded-2xl border px-4 py-3 text-sm", tones)}>
       {children}
     </div>
   );
@@ -265,7 +265,7 @@ export function TypingDots({ className = "" }: { className?: string }) {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-2 w-2 animate-[--animate-dot-bounce] rounded-full bg-encre-500"
+          className="h-2 w-2 animate-dot-bounce rounded-full bg-encre-500"
           style={{ animationDelay: `${i * 0.14}s` }}
         />
       ))}
@@ -292,7 +292,7 @@ export function Stamp({
     neutral: "from-inku-400 to-inku-700",
   }[tone];
   return (
-    <div className="relative mx-auto w-full max-w-[320px] animate-[--animate-stamp-in]">
+    <div className="relative mx-auto w-full max-w-[320px] animate-stamp-in">
       <div
         className={cx(
           "relative aspect-[3/2] rotate-[-4deg] rounded-[58%_42%_61%_39%/43%_58%_42%_57%] bg-gradient-to-br shadow-[0_20px_46px_-12px_rgba(84,33,142,0.45)]",

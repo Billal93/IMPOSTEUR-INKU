@@ -1,136 +1,158 @@
 import Link from "next/link";
 import { AppHeader } from "@/components/AppHeader";
 import { Mascot } from "@/components/Mascot";
+import { InkBurst } from "@/components/InkBurst";
 import { Reveal } from "@/components/ui";
 import { IconArrowRight, IconTimer, IconUsers } from "@/components/icons";
+
+/** Les trois étapes de la section « Comment jouer ». */
+const STEPS = [
+  {
+    n: "01",
+    sfx: "TAP !",
+    title: "Crée ou rejoins.",
+    body: "Un joueur ouvre le lobby et partage le code. Tout le monde entre depuis son navigateur — pas d'appli, pas de compte.",
+    shape: "radius-blob-a",
+    tilt: "sm:-rotate-1",
+  },
+  {
+    n: "02",
+    sfx: "CHUT…",
+    title: "Le même mot. Sauf un.",
+    body: "Tout le monde voit le même mot d'anime. L'imposteur en reçoit un proche — sans savoir lequel des deux est le bon.",
+    shape: "radius-blob-b",
+    tilt: "sm:rotate-1",
+  },
+  {
+    n: "03",
+    sfx: "VOTE !",
+    title: "Un indice, puis accuse.",
+    body: "Chacun lâche son indice à son tour. Observez les hésitations, puis votez pour démasquer le menteur.",
+    shape: "radius-blob-c",
+    tilt: "sm:-rotate-[0.5deg]",
+  },
+];
 
 export default function Home() {
   return (
     <main className="min-h-dvh overflow-x-clip">
-      <AppHeader />
+      <div className="mx-auto w-full max-w-[1160px] px-4 sm:px-8">
+        <AppHeader />
+      </div>
 
       {/* ------------------------------- Hero ------------------------------- */}
-      <section className="relative mx-auto flex w-full max-w-3xl flex-col items-center px-4 pb-20 pt-8 text-center sm:pb-28 sm:pt-16">
-        <div aria-hidden="true" className="halftone left-[-70px] top-10 h-44 w-44" />
+      <section className="relative">
+        <div aria-hidden="true" className="halftone left-[-80px] top-8 h-52 w-52" />
 
-        <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
-          <span className="h-[2px] w-6 -rotate-6 bg-encre-500" />
-          Le jeu social anime par INKU
-        </p>
-
-        <div className="relative isolate mx-auto grid w-fit place-items-center">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 400 160"
-            className="absolute -inset-x-[18%] -inset-y-[38%] -z-10 animate-[--animate-ink-spread] text-transparent"
-          >
-            <defs>
-              <linearGradient id="heroInk" x1="0" y1="0" x2="1" y2="0.4">
-                <stop stopColor="var(--color-encre-500)" />
-                <stop offset="0.5" stopColor="var(--color-inku-600)" />
-                <stop offset="1" stopColor="var(--color-inku-400)" />
-              </linearGradient>
-            </defs>
-            <path
-              fill="url(#heroInk)"
-              opacity="0.9"
-              d="M22 88C46 62 70 46 104 46c22 0 30 14 54 12 30-2 44-24 78-20 26 3 34 20 62 18 32-2 42-22 76-16 27 5 32 22 60 20 30-2 42-18 66-8 18 8 20 22 8 34-10 10-26 10-34 22-9 13 4 24-10 34-12 9-28 2-36 14-8 11 6 22-8 32-13 9-30 0-40 11-9 10 3 22-12 30-14 8-30-2-42 8-11 10 0 22-16 28-15 6-30-4-44 4-13 8-8 20-24 24-15 4-28-6-40 0-11 6-6 18-20 20-13 2-24-8-34-4-9 4-6 14-18 14-11 0-16-10-26-10-9 0-14 10-24 8-9-2-10-12-18-16-9-4-18 2-24-6-6-8 2-16-4-24-6-8-16-6-20-14-4-8 4-16-2-24-6-8-16-6-18-16-2-8 6-16 0-24-6-8-16-6-16-16 0-8 8-14 4-22-4-8-14-8-14-18 0-9 10-14 8-22-2-9-12-12-10-22 2-9 12-12 12-22 0-9-8-14-4-22Z"
+        <div className="mx-auto grid w-full max-w-[1160px] items-center gap-2 px-4 pb-16 pt-6 sm:px-8 sm:pb-24 lg:grid-cols-[minmax(340px,0.9fr)_minmax(0,1.1fr)] lg:gap-6 lg:pt-4">
+          {/* La mascotte passe au-dessus du texte sur mobile, à droite sur desktop. */}
+          <div className="relative order-1 mx-auto grid w-[min(330px,72vw)] place-items-center lg:order-2 lg:-mr-10 lg:w-[min(500px,42vw)] lg:justify-self-end">
+            <div
+              aria-hidden="true"
+              className="absolute aspect-square w-[82%] animate-blob-drift rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.22),rgba(242,64,155,0.06)_46%,transparent_70%)] blur-sm"
             />
-          </svg>
-          <h1 className="brand-text animate-[--animate-title-reveal] font-display text-6xl font-bold tracking-tight sm:text-8xl">
-            IMPOSTEUR
-          </h1>
+            <Mascot
+              expression="sneaky"
+              size={500}
+              priority
+              className="relative w-full animate-float drop-shadow-[0_30px_34px_rgba(16,2,38,0.34)]"
+            />
+          </div>
+
+          <div className="order-2 text-center lg:order-1 lg:text-left">
+            <p className="mb-4 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+              <span className="h-[2px] w-6 -rotate-6 bg-encre-500" />
+              Le jeu social anime par INKU
+            </p>
+
+            {/* L'éclaboussure est derrière ; le titre passe en blanc par-dessus. */}
+            <div className="relative isolate mx-auto grid w-fit max-w-full place-items-center lg:mx-0">
+              <InkBurst className="absolute left-[-20%] top-[-27%] -z-10 h-[154%] w-[136%] origin-[22%_56%] animate-ink-spread drop-shadow-[0_22px_36px_rgba(72,12,123,0.27)]" />
+              {/* nowrap : le titre est un bloc, jamais coupé. La taille est
+                  calée pour tenir dans la gouttière même avec la police de
+                  repli, plus large que Clash Display. */}
+              <h1 className="animate-title-reveal whitespace-nowrap font-display text-[clamp(46px,15vw,98px)] font-bold leading-[0.86] tracking-[-0.07em] text-white [text-shadow:0_3px_0_rgba(31,5,72,0.8),0_12px_26px_rgba(38,7,70,0.28)] md:text-[clamp(64px,7vw,108px)] lg:text-[clamp(78px,6vw,116px)]">
+                IMPOSTEUR
+              </h1>
+            </div>
+
+            <p className="mx-auto mt-6 max-w-[620px] text-balance text-[17px] font-medium leading-relaxed text-muted sm:text-[19px] lg:mx-0">
+              Tout le monde reçoit le même mot d&apos;anime.{" "}
+              <strong className="font-bold text-ink">Sauf un.</strong> Donne des indices, repère le
+              menteur — ou fais-toi passer pour l&apos;un des leurs.
+            </p>
+
+            <div className="mx-auto mt-7 grid w-full max-w-[430px] gap-3 sm:grid-cols-2 lg:mx-0 lg:max-w-[560px]">
+              <Link
+                href="/creer"
+                className="shine-sweep brand-gradient inline-flex h-14 items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_13px_30px_-10px_rgba(116,55,208,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.96]"
+              >
+                Créer une partie
+                <IconArrowRight size={20} />
+              </Link>
+              <Link
+                href="/rejoindre"
+                className="inline-flex h-14 items-center justify-center rounded-full border border-line bg-surface font-display text-lg font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-inku-300 active:scale-[0.96] dark:hover:border-inku-700"
+              >
+                Rejoindre
+              </Link>
+            </div>
+
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-xs font-bold text-muted lg:justify-start">
+              <span className="inline-flex items-center gap-1.5">
+                <IconUsers size={15} /> 3 à 12 joueurs
+              </span>
+              <span className="h-[3px] w-[3px] rounded-full bg-encre-500/70" />
+              <span className="inline-flex items-center gap-1.5">
+                <IconTimer size={15} /> ~5 min par manche
+              </span>
+              <span className="h-[3px] w-[3px] rounded-full bg-encre-500/70" />
+              <span>Sans installation</span>
+            </div>
+          </div>
         </div>
 
-        <p className="mt-5 max-w-md text-balance text-[15px] leading-relaxed text-muted">
-          Tout le monde reçoit le même mot d&apos;anime. <strong className="text-ink">Sauf un.</strong>{" "}
-          Donne des indices, repère le menteur — ou fais-toi passer pour l&apos;un des leurs.
-        </p>
-
-        <div className="relative mt-8 grid w-fit place-items-center">
-          <div
-            aria-hidden="true"
-            className="absolute h-40 w-40 animate-[--animate-blob-drift] rounded-full bg-gradient-to-br from-encre-500/25 to-inku-500/10 blur-2xl"
-          />
-          <Mascot expression="sneaky" size={132} priority className="relative animate-[--animate-float]" />
-        </div>
-
-        <div className="mt-6 flex w-full max-w-xs flex-col gap-3">
-          <Link
-            href="/creer"
-            className="shine-sweep brand-gradient inline-flex h-14 items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_10px_30px_-12px_rgba(124,58,237,0.9)] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.96]"
-          >
-            Créer une partie
-            <IconArrowRight size={20} />
-          </Link>
-          <Link
-            href="/rejoindre"
-            className="inline-flex h-14 items-center justify-center rounded-full border border-line bg-surface font-display text-lg font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-inku-300 active:scale-[0.96] dark:hover:border-inku-700"
-          >
-            Rejoindre avec un code
-          </Link>
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-xs font-semibold text-muted">
-          <span className="inline-flex items-center gap-1.5">
-            <IconUsers size={15} /> 3 à 12 joueurs
-          </span>
-          <span className="h-0.5 w-0.5 rounded-full bg-encre-500/70" />
-          <span className="inline-flex items-center gap-1.5">
-            <IconTimer size={15} /> ~5 min par manche
-          </span>
-          <span className="h-0.5 w-0.5 rounded-full bg-encre-500/70" />
-          <span>Sur ton téléphone, sans installer</span>
-        </div>
+        <div
+          aria-hidden="true"
+          className="mx-auto h-px w-full max-w-[1400px] bg-gradient-to-r from-transparent via-line to-transparent"
+        />
       </section>
 
       {/* --------------------------- Comment jouer --------------------------- */}
-      <section className="relative overflow-hidden px-4 py-16 sm:py-24">
-        <div aria-hidden="true" className="halftone right-[-90px] top-16 h-56 w-56 opacity-25" />
-        <div className="mx-auto max-w-3xl">
-          <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-encre-500">
-              3 étapes. Un seul menteur.
+      <section className="relative overflow-hidden py-16 sm:py-24">
+        <div aria-hidden="true" className="halftone right-[-90px] top-20 h-56 w-56 opacity-25" />
+
+        <div className="mx-auto w-full max-w-[1160px] px-4 sm:px-8">
+          <Reveal className="sm:flex sm:items-end sm:justify-between sm:gap-12">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.13em] text-encre-500">
+                3 étapes. Un seul menteur.
+              </p>
+              <h2 className="mt-2 font-display text-[clamp(38px,10vw,58px)] font-bold leading-[0.95] tracking-[-0.045em]">
+                Comment jouer
+              </h2>
+            </div>
+            <p className="mt-4 max-w-[520px] leading-relaxed text-muted sm:mt-0">
+              Pas de règles à apprendre pendant vingt minutes. Tout le monde prend son téléphone, la
+              partie démarre, et les soupçons aussi.
             </p>
-            <h2 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">
-              Comment jouer
-            </h2>
           </Reveal>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-3 sm:gap-4">
-            {[
-              {
-                n: "01",
-                sfx: "TAP !",
-                t: "Crée ou rejoins.",
-                d: "Un joueur ouvre le lobby, partage le code. Tout le monde entre depuis son navigateur — pas d'appli.",
-              },
-              {
-                n: "02",
-                sfx: "CHUT…",
-                t: "Le même mot. Sauf un.",
-                d: "Tout le monde voit le même mot d'anime. L'imposteur voit un mot proche, sans savoir lequel des deux est le bon.",
-              },
-              {
-                n: "03",
-                sfx: "VOTE !",
-                t: "Indice, puis accuse.",
-                d: "Chacun lâche un indice à son tour. Observez les hésitations, puis votez pour démasquer le menteur.",
-              },
-            ].map((s, i) => (
-              <Reveal key={s.n} delay={i * 90}>
-                <div
-                  className={cxRadius(i)}
-                >
-                  <span className="absolute right-4 top-[-14px] rotate-[-8deg] font-display text-base font-bold uppercase tracking-wide text-encre-500 [text-shadow:2px_2px_0_var(--paper-line)]">
+          <div className="mt-12 grid gap-8 sm:mt-16 sm:grid-cols-3 sm:gap-5">
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 100}>
+                <article className={`ink-card ${s.shape} ${s.tilt} relative h-full p-6 sm:p-7`}>
+                  <span className="absolute right-4 top-[-15px] rotate-[-9deg] font-display text-lg font-bold uppercase tracking-[0.08em] text-encre-500 [text-shadow:2px_2px_0_var(--paper-line)]">
                     {s.sfx}
                   </span>
-                  <span className="inline-grid h-9 w-9 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] bg-paper-line font-display text-base font-bold text-paper shadow-[3px_3px_0_var(--color-encre-500)]">
+                  <span className="inline-grid h-10 w-10 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] bg-paper-line font-display text-base font-bold text-white shadow-[3px_3px_0_var(--color-encre-500)]">
                     {s.n}
                   </span>
-                  <h3 className="mt-4 font-display text-xl font-bold leading-tight">{s.t}</h3>
-                  <p className="mt-1.5 text-sm font-semibold leading-relaxed text-paper-muted">{s.d}</p>
-                </div>
+                  <h3 className="mt-5 font-display text-2xl font-bold leading-[1.03] tracking-[-0.02em]">
+                    {s.title}
+                  </h3>
+                  <p className="mt-2 font-semibold leading-relaxed text-paper-muted">{s.body}</p>
+                </article>
               </Reveal>
             ))}
           </div>
@@ -138,25 +160,30 @@ export default function Home() {
       </section>
 
       {/* ------------------------------ CTA finale ----------------------------- */}
-      <section className="px-4 pb-24 pt-4 sm:pb-32">
-        <Reveal className="mx-auto max-w-2xl">
-          <div className="relative overflow-visible rounded-[18px_44px_17px_34px] border border-line bg-surface p-8 text-center shadow-[0_24px_60px_-20px_rgba(42,15,64,0.35)] sm:p-14">
+      <section className="px-4 pb-24 pt-4 sm:px-8 sm:pb-32">
+        <Reveal className="mx-auto max-w-[880px]">
+          <div className="relative rounded-[18px_44px_17px_34px] border border-line bg-surface p-8 text-center shadow-[0_24px_60px_-20px_rgba(42,15,64,0.35)] sm:p-14">
             <div
               aria-hidden="true"
-              className="absolute -left-6 -top-6 h-16 w-24 -rotate-[18deg] rounded-[60%_40%_72%_28%/48%_65%_35%_52%] bg-gradient-to-br from-encre-500 to-inku-500"
+              className="absolute -left-6 -top-6 -z-10 h-16 w-24 -rotate-[18deg] rounded-[60%_40%_72%_28%/48%_65%_35%_52%] bg-gradient-to-br from-encre-500 to-inku-500"
             />
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-encre-500">
+            <Mascot
+              expression="smug"
+              size={170}
+              className="absolute -top-20 right-2 w-[100px] rotate-[8deg] drop-shadow-[0_14px_20px_rgba(0,0,0,0.25)] sm:-top-28 sm:right-[4%] sm:w-[150px]"
+            />
+            <p className="text-xs font-bold uppercase tracking-[0.13em] text-encre-500">
               Tu crois savoir mentir ?
             </p>
-            <h2 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-6xl">
+            <h2 className="mt-2 font-display text-[clamp(38px,11vw,64px)] font-bold leading-[0.95] tracking-[-0.045em]">
               Prouve-le à tes potes.
             </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+            <p className="mx-auto mt-4 max-w-[520px] leading-relaxed text-muted">
               Crée le lobby, balance le code dans le groupe et découvre qui craque le premier.
             </p>
             <Link
               href="/creer"
-              className="shine-sweep brand-gradient mx-auto mt-6 inline-flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_10px_30px_-12px_rgba(124,58,237,0.9)] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.96]"
+              className="shine-sweep brand-gradient mx-auto mt-7 inline-flex h-14 w-full max-w-[340px] items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_13px_30px_-10px_rgba(116,55,208,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.96]"
             >
               Créer une partie
               <IconArrowRight size={20} />
@@ -171,18 +198,14 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <footer className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 border-t border-line px-4 py-6 text-xs font-semibold text-muted">
-        <span>
-          <span className="text-ink">INKU</span> — anime, manga &amp; jeux entre potes.
-        </span>
-        <span>© 2026</span>
+      <footer className="mx-auto w-full max-w-[1160px] px-4 pb-10 sm:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-xs font-semibold text-muted">
+          <span>
+            <span className="text-ink">INKU</span> — anime, manga &amp; jeux entre potes.
+          </span>
+          <span>© 2026</span>
+        </div>
       </footer>
     </main>
   );
-}
-
-/** Alterne les coins asymétriques des bulles "Comment jouer" pour qu'aucune ne se ressemble. */
-function cxRadius(i: number) {
-  const shapes = ["radius-blob-a", "radius-blob-b", "radius-blob-c"];
-  return `ink-card ${shapes[i % shapes.length]} relative p-6`;
 }

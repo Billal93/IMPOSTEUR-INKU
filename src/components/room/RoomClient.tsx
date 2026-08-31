@@ -174,7 +174,7 @@ function PauseBanner({ pausedAt }: { pausedAt: string }) {
   }, [pausedAt]);
 
   return (
-    <Card className="mb-4 animate-[--animate-pop] border-amber-300 bg-amber-50 text-center dark:border-amber-900 dark:bg-amber-950/40">
+    <Card className="mb-4 animate-pop border-amber-300 bg-amber-50 text-center dark:border-amber-900 dark:bg-amber-950/40">
       <h2 className="font-display text-lg font-bold">Partie en pause</h2>
       <p className="mt-1 text-sm text-muted">
         Il faut au moins {MIN_PLAYERS} joueurs connectés pour continuer. On attend le retour des

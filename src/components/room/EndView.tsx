@@ -14,9 +14,9 @@ export function EndView({ state }: { state: RoomState }) {
 
   return (
     <div className="space-y-4 pb-28">
-      <div className="ink-card radius-blob-a relative animate-[--animate-pop] overflow-hidden p-6 text-center">
+      <div className="ink-card radius-blob-a relative animate-pop overflow-hidden p-6 text-center">
         <div aria-hidden="true" className="ink-blob -left-8 -top-6 h-28 w-32" />
-        <div className="relative mx-auto w-fit animate-[--animate-float]">
+        <div className="relative mx-auto w-fit animate-float">
           <Mascot expression="content" size={108} />
         </div>
         <h2 className="relative mt-2 font-display text-2xl font-bold">Partie terminée</h2>

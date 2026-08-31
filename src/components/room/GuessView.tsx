@@ -32,7 +32,7 @@ export function GuessView({ state, api, skew }: { state: RoomState; api: RoomApi
     <div className="space-y-4 pb-24">
       <div className="ink-card radius-blob-a relative overflow-hidden p-5 text-center">
         <div aria-hidden="true" className="ink-blob -left-8 -bottom-6 h-24 w-32" />
-        <div className="relative mx-auto w-fit animate-[--animate-float]">
+        <div className="relative mx-auto w-fit animate-float">
           <Mascot expression="nervous" size={92} />
         </div>
         <h2 className="relative mt-2 font-display text-2xl font-bold">Imposteur démasqué !</h2>

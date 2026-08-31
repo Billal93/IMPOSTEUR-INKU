@@ -11,7 +11,7 @@ export default function ReglesPage() {
 
       <article className="mx-auto w-full max-w-2xl space-y-6 px-4 pt-6">
         <header className="text-center">
-          <div className="mx-auto w-fit animate-[--animate-float]">
+          <div className="mx-auto w-fit animate-float">
             <Mascot expression="sneaky" size={88} />
           </div>
           <h1 className="mt-3 font-display text-3xl font-bold">Les règles</h1>

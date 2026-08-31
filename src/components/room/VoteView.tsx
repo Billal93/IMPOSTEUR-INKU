@@ -41,7 +41,7 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
 
   return (
     <div className="space-y-4 pb-24">
-      <Card className="animate-[--animate-pop]">
+      <Card className="animate-pop">
         <div className="flex items-center gap-3">
           {round.deadline && <TimerRing seconds={left} total={total} />}
           <div className="min-w-0 flex-1">

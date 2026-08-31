@@ -84,7 +84,7 @@ export function LobbyView({
   return (
     <div className="space-y-4 pb-32">
       {/* Code de la room */}
-      <div className="ink-card radius-blob-a relative animate-[--animate-pop] overflow-hidden p-5 text-center">
+      <div className="ink-card radius-blob-a relative animate-pop overflow-hidden p-5 text-center">
         <div aria-hidden="true" className="ink-blob -right-9 -top-7 h-28 w-32" />
         <p className="relative text-xs font-bold uppercase tracking-widest text-paper-muted">
           Code de la room
