@@ -125,13 +125,23 @@
 /* Surfaces clair / sombre                                             */
 /* ------------------------------------------------------------------ */
 /*
- * Clash Display pour l'affichage, Urbanist pour le texte courant. Les piles
- * sont declarees ici, hors de @theme : ainsi elles sont toujours emises, que
- * les classes utilitaires correspondantes soient utilisees ou non.
+ * Clash Display pour l'affichage, Urbanist pour le texte courant.
+ *
+ * Deux precautions, chacune pour un piege distinct :
+ *
+ * 1. Les piles sont declarees hors de @theme, sinon Tailwind v4 les elague
+ *    quand aucune classe utilitaire correspondante n'est ecrite.
+ * 2. Elles sont declarees sur `body`, PAS sur `:root` : c'est `body` qui
+ *    porte les classes next/font definissant --font-display-src et
+ *    --font-body-src. Une custom property se resout la ou elle est declaree —
+ *    sur :root ces variables n'existent pas, la var() serait invalide et
+ *    toute la pile tomberait a vide (police systeme partout).
+ *
+ * Le fallback dans var() est la ceinture de securite si next/font change.
  */
-:root {
-  --font-display-stack: var(--font-display-src), "Trebuchet MS", ui-rounded, system-ui, sans-serif;
-  --font-body-stack: var(--font-body-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+body {
+  --font-display-stack: var(--font-display-src, "Trebuchet MS"), "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  --font-body-stack: var(--font-body-src, ui-sans-serif), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 :root {
