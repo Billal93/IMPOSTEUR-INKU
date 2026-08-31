@@ -7,6 +7,30 @@ Stack : Next.js 16 (App Router, TS) · Tailwind v4 · Supabase (Postgres + Realt
 - **Repo** : https://github.com/Billal93/imposteur (privé)
 - **Supabase** : projet `qggynwzcjdxrdwmqrqys`
 
+## Correctifs post-lancement (retours de tests)
+
+**1. Fuite de rôle — corrigée.** L'imposteur voyait « Tu es l'imposteur » en toutes lettres sur
+sa carte de mot (badge rouge, mascotte sournoise, texte « fonds-toi dans la masse »). Ce n'était
+pas le mécanisme Undercover classique, où personne ne sait s'il tient le mot majoritaire ou le
+mot proche — on ne le découvre qu'à l'élimination ou à la fin de manche. Corrigé à deux niveaux :
+- `WordCard` n'a plus de prop de rôle : même badge, même mascotte, même style pour tout le monde.
+- `RoomState.round` n'expose plus `iAmImposter` — retiré du JSON renvoyé par `/state`, pas
+  seulement de l'UI, pour qu'un joueur qui inspecte le réseau n'apprenne rien non plus.
+- Vérifié par une nouvelle assertion e2e qui inspecte le JSON brut des 3 joueurs et confirme
+  qu'aucune réponse ne contient `iAmImposter` ni `imposter_player_ids` avant la révélation.
+
+**2. Paires de mots trop classiques — renouvelées.** 67 → 86 paires. Retrait des 10 duos les plus
+iconiques du même anime (Naruto/Sasuke, Luffy/Zoro, Goku/Vegeta, Eren/Mikasa, Ichigo/Rukia,
+Saitama/Genos, Izuku/Bakugo, Tanjiro/Zenitsu, Yuji/Megumi, Edward/Alphonse) — un indice quasi vide
+suffisait à percer ces couples tant ils sont associés dans la culture populaire. Remplacés et
+complétés par des rapprochements inter-œuvres (même archétype, pouvoir ou silhouette) qui
+demandent une vraie réflexion : Saitama/Meliodas, Sukuna/Muzan, Makima/Aizen, Asta/Naruto,
+Cowboy Bebop/Trigun, Evangelion/Madoka Magica, etc. Appliqué en prod via un script de purge
+ciblée (12 paires supprimées par id, 3 reclassifiées) puis `npm run seed` (86 paires importées,
+161 mots). La distribution des `proximity_type` s'est rééquilibrée vers `meme_archetype` /
+`pouvoir_similaire` / `visuellement_proche`, qui forcent le raisonnement inter-franchise plutôt
+que la reconnaissance immédiate d'un duo célèbre.
+
 ## Étapes
 
 - [x] 1. Scaffold projet (Next.js TS + Tailwind, structure `/app` `/components` `/lib` `/server`, design tokens DA)
