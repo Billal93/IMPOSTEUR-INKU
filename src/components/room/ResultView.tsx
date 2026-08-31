@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Avatar } from "../Avatar";
-import { Mascot } from "../Mascot";
-import { Badge, Button, Card, cx } from "../ui";
+import { Badge, Button, Card, Stamp, cx } from "../ui";
 import { ClueFeed } from "./ClueFeed";
 import { TimerBar, useCountdown } from "./Timer";
 import { PROXIMITY_LABELS } from "@/lib/constants";
@@ -25,32 +24,33 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
     await api.post("report", { clue: { playerId: clue.playerId, turnNumber: clue.turnNumber } });
   }
 
+  const stampTone = result.tie ? "neutral" : civilsWin ? "civil" : "imposteur";
+  const stampText = result.tie ? (
+    <>
+      PERSONNE
+      <br />
+      D&apos;ÉLIMINÉ
+    </>
+  ) : civilsWin ? (
+    <>
+      IMPOSTEUR
+      <br />
+      DÉMASQUÉ
+    </>
+  ) : (
+    <>
+      IL VOUS
+      <br />A EU
+    </>
+  );
+
   return (
     <div className="space-y-4 pb-32">
-      <Card
-        className={cx(
-          "animate-[--animate-pop] text-center",
-          result.tie
-            ? "border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40"
-            : civilsWin
-              ? "border-emerald-300 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/40"
-              : "border-rose-300 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/40",
-        )}
-      >
-        <div className="mx-auto w-fit">
-          <Mascot expression={result.tie ? "neutral" : civilsWin ? "content" : "smug"} size={92} />
-        </div>
-
-        <h2 className="mt-3 font-display text-2xl font-bold">
-          {result.tie
-            ? "Personne d'éliminé"
-            : civilsWin
-              ? "Les civils l'emportent"
-              : "L'imposteur s'en sort"}
-        </h2>
+      <div className="pt-2 text-center">
+        <Stamp tone={stampTone}>{stampText}</Stamp>
 
         {eliminated && (
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5">
+          <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5">
             <Avatar
               avatarId={eliminated.avatarId}
               size={26}
@@ -64,27 +64,33 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
         )}
 
         {result.imposterGuess !== null && (
-          <p className="mt-3 text-sm">
-            Sa réponse : <span className="font-display font-bold">« {result.imposterGuess} »</span>{" "}
+          <p className="mt-3 text-sm text-muted">
+            Sa réponse : <span className="font-display font-bold text-ink">« {result.imposterGuess} »</span>{" "}
             {result.imposterGuessCorrect ? "— trouvé, il vole la manche." : "— raté."}
           </p>
         )}
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <div className="rounded-2xl border border-line bg-surface p-3">
+        {round.deadline && (
+          <div className="mx-auto mt-4 max-w-xs">
+            <TimerBar seconds={left} total={state.settings.resultSeconds} />
+          </div>
+        )}
+      </div>
+
+      <Card>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="radius-blob-a border border-line bg-sunken p-3">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted">Mot des civils</p>
             <p className="mt-1 font-display text-lg font-bold">{result.civilWord}</p>
           </div>
-          <div className="rounded-2xl border border-line bg-surface p-3">
+          <div className="radius-blob-b border border-line bg-sunken p-3">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted">Mot de l&apos;imposteur</p>
             <p className="mt-1 font-display text-lg font-bold">{result.imposterWord}</p>
           </div>
         </div>
-        <p className="mt-2 text-xs text-muted">
-          Proximité : {PROXIMITY_LABELS[result.proximityType]}
-        </p>
+        <p className="mt-2 text-xs text-muted">Proximité : {PROXIMITY_LABELS[result.proximityType]}</p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-muted">
             Imposteur{imposters.length > 1 ? "s" : ""} :
           </span>
@@ -98,12 +104,6 @@ export function ResultView({ state, api, skew }: { state: RoomState; api: RoomAp
             </span>
           ))}
         </div>
-
-        {round.deadline && (
-          <div className="mt-4">
-            <TimerBar seconds={left} total={state.settings.resultSeconds} />
-          </div>
-        )}
       </Card>
 
       {/* Scores de la manche */}

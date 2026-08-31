@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "../AppHeader";
-import { Badge, Button, Card, Notice, Spinner, cx } from "../ui";
+import { Badge, Button, Card, Notice, Spinner, Toast, cx } from "../ui";
 import { LobbyView } from "./LobbyView";
 import { CluesView } from "./CluesView";
 import { DiscussionView } from "./DiscussionView";
@@ -24,8 +24,33 @@ export function RoomClient({ code }: { code: string }) {
   const error = useRoomStore((s) => s.error);
   const skew = useRoomStore((s) => s.clockSkew);
   const reset = useRoomStore((s) => s.reset);
+  const toast = useRoomStore((s) => s.toast);
+  const showToast = useRoomStore((s) => s.showToast);
+  const clearToast = useRoomStore((s) => s.clearToast);
 
   useEffect(() => reset, [code, reset]);
+
+  // Petites notifications réactives sur les transitions qui comptent pour
+  // MOI : mon tour d'indice arrive, le vote démarre, on me demande de
+  // deviner. Purement client, ne déclenche jamais d'appel API — juste un
+  // signal de vie en plus de l'écran qui change déjà.
+  const notified = useRef<string | null>(null);
+  useEffect(() => {
+    const round = state?.round;
+    const meId = state?.me.id;
+    if (!round || !meId || state?.me.isSpectator) return;
+    const key = `${round.id}:${round.status}:${round.turnNumber}:${round.currentPlayerId}`;
+    if (notified.current === key) return;
+    notified.current = key;
+
+    if (round.status === "indices" && round.currentPlayerId === meId) {
+      showToast("À toi de jouer — donne ton indice.");
+    } else if (round.status === "vote" && round.myVote === null) {
+      showToast("Le vote commence !");
+    } else if (round.status === "devinette" && round.eliminatedPlayerId === meId) {
+      showToast("Dernière chance : devine le mot.");
+    }
+  }, [state?.round, state?.me.id, state?.me.isSpectator, showToast]);
 
   const api = useRoom(code);
   // Une seule échéance est active à la fois : celle du lobby, ou celle de la
@@ -132,6 +157,8 @@ export function RoomClient({ code }: { code: string }) {
           <ResultView state={state} api={api} skew={skew} />
         )}
       </div>
+
+      <Toast message={toast?.message ?? null} tone={toast?.tone} onDismiss={clearToast} />
     </main>
   );
 }

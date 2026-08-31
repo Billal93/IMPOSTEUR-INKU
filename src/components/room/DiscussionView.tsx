@@ -12,20 +12,21 @@ export function DiscussionView({ state, skew }: { state: RoomState; skew: number
 
   return (
     <div className="space-y-4 pb-24">
-      <Card className="animate-[--animate-pop]">
-        <div className="flex items-center gap-3">
+      <div className="ink-card radius-blob-c relative animate-[--animate-pop] overflow-hidden p-5">
+        <div aria-hidden="true" className="ink-blob -right-7 -top-5 h-20 w-24" />
+        <div className="relative flex items-center gap-3">
           <TimerRing seconds={left} total={state.settings.discussionSeconds || 30} />
           <div>
             <h2 className="font-display text-xl font-bold">Discussion libre</h2>
-            <p className="text-sm text-muted">
+            <p className="text-sm font-semibold text-paper-muted">
               Parlez-vous en vrai. Accusez, défendez-vous, mentez. Le vote arrive.
             </p>
           </div>
         </div>
-        <div className="mt-3">
+        <div className="relative mt-3">
           <TimerBar seconds={left} total={state.settings.discussionSeconds || 30} />
         </div>
-      </Card>
+      </div>
 
       <Card>
         <h3 className="mb-3 font-display text-base font-bold">Les indices</h3>

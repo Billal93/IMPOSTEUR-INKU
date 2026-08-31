@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, Notice } from "../ui";
+import { Button, Card, Notice, iconButtonClass, cx } from "../ui";
 import { PlayerTile, ReadyDot } from "./PlayerTile";
 import { useCountdown } from "./Timer";
 import { Collapsible, GameSettingsForm, settingsSummary } from "../GameSettingsForm";
@@ -84,30 +84,31 @@ export function LobbyView({
   return (
     <div className="space-y-4 pb-32">
       {/* Code de la room */}
-      <Card className="animate-[--animate-pop] text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted">Code de la room</p>
-        <div className="mt-2 flex items-center justify-center gap-3">
-          <span className="font-display text-4xl font-bold tracking-[0.24em] text-ink">
-            {state.code}
-          </span>
+      <div className="ink-card radius-blob-a relative animate-[--animate-pop] overflow-hidden p-5 text-center">
+        <div aria-hidden="true" className="ink-blob -right-9 -top-7 h-28 w-32" />
+        <p className="relative text-xs font-bold uppercase tracking-widest text-paper-muted">
+          Code de la room
+        </p>
+        <div className="relative mt-2 flex items-center justify-center gap-3">
+          <span className="font-display text-4xl font-bold tracking-[0.24em]">{state.code}</span>
           <button
             type="button"
             onClick={copyCode}
             aria-label="Copier le code"
-            className="grid h-10 w-10 place-items-center rounded-full border border-line text-muted transition hover:text-inku-600 active:scale-95"
+            className={cx(iconButtonClass, "border-paper-line/20 bg-black/5 text-paper-ink hover:text-inku-600")}
           >
             {copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
           </button>
         </div>
-        <Button variant="secondary" size="sm" className="mt-3" onClick={share}>
+        <Button variant="secondary" size="sm" className="relative mt-3 bg-white/70 dark:bg-white/70" onClick={share}>
           Partager le lien
         </Button>
         {state.lobbyDeadline && (
-          <p className="mt-3 text-xs font-semibold text-muted">
+          <p className="relative mt-3 text-xs font-bold text-paper-muted">
             Lancement auto dans {Math.ceil(autoStart)}s
           </p>
         )}
-      </Card>
+      </div>
 
       {/* Joueurs */}
       <Card>

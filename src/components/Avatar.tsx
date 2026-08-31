@@ -66,10 +66,10 @@ export function AvatarPicker({
           aria-label={a.name}
           aria-pressed={value === a.id}
           className={cx(
-            "grid aspect-square place-items-center overflow-hidden rounded-2xl border p-1 transition active:scale-95",
+            "grid aspect-square place-items-center overflow-hidden rounded-2xl border p-1 transition-all duration-200 active:scale-90",
             value === a.id
-              ? "border-inku-500 bg-inku-50 dark:bg-inku-950"
-              : "border-line bg-bg hover:border-inku-300 dark:hover:border-inku-700",
+              ? "animate-[--animate-pop] border-inku-500 bg-inku-50 shadow-[0_6px_16px_-6px_rgba(124,58,237,0.5)] dark:bg-inku-950"
+              : "border-line bg-bg hover:-translate-y-0.5 hover:border-inku-300 dark:hover:border-inku-700",
           )}
         >
           <Image src={`/avatars/${a.id}.png`} alt={a.name} width={72} height={72} className="h-full w-full object-contain" />

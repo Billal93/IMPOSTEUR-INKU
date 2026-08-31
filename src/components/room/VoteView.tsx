@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Avatar } from "../Avatar";
-import { Badge, Card, Notice } from "../ui";
-import { PlayerTile } from "./PlayerTile";
+import { Card, Notice, cx } from "../ui";
 import { TimerBar, TimerRing, useCountdown } from "./Timer";
 import { ClueFeed } from "./ClueFeed";
 import { WordCard } from "./WordCard";
@@ -87,38 +86,51 @@ export function VoteView({ state, api, skew }: { state: RoomState; api: RoomApi;
       {error && <Notice tone="error">{error}</Notice>}
 
       {canVote ? (
-        <Card>
+        <div>
           <h3 className="mb-3 font-display text-base font-bold">
             {round.myVote ? "Ton vote est enregistré" : "Choisis"}
           </h3>
-          <div className="space-y-2">
-            {candidates.map((p) => (
-              <PlayerTile
-                key={p.id}
-                player={p}
-                selected={round.myVote === p.id}
-                onClick={() => vote(p.id)}
-                dimmed={busy !== null && busy !== p.id}
-                right={
-                  round.myVote === p.id ? (
-                    <Badge tone="inku">ton vote</Badge>
-                  ) : undefined
-                }
-                subtitle={
-                  round.clues
-                    .filter((c) => c.playerId === p.id && !c.passed)
-                    .map((c) => c.content)
-                    .join(" · ") || "n'a rien dit"
-                }
-              />
-            ))}
+          <div className="space-y-2.5">
+            {candidates.map((p, i) => {
+              const selected = round.myVote === p.id;
+              const clue = round.clues.find((c) => c.playerId === p.id && !c.passed)?.content;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => vote(p.id)}
+                  disabled={busy !== null && busy !== p.id}
+                  className={cx(
+                    i % 2 === 0 ? "radius-blob-a" : "radius-blob-b",
+                    "flex w-full items-center gap-3 border p-3.5 text-left transition-all duration-200 active:scale-[0.98] disabled:opacity-40",
+                    selected
+                      ? "rotate-[-0.4deg] border-encre-500 bg-encre-500/[0.06] shadow-[0_10px_26px_-14px_rgba(236,72,153,0.55)]"
+                      : "border-line bg-surface hover:border-inku-300 dark:hover:border-inku-700",
+                  )}
+                >
+                  <Avatar avatarId={p.avatarId} size={44} ring={selected ? "imposteur" : "none"} />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-display text-[15px] font-bold">{p.pseudo}</div>
+                    <div className="truncate text-xs text-muted">{clue ?? "n'a rien dit"}</div>
+                  </div>
+                  <span
+                    className={cx(
+                      "grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition-colors",
+                      selected ? "border-encre-500" : "border-line",
+                    )}
+                  >
+                    {selected && <span className="h-2.5 w-2.5 rounded-full bg-encre-500" />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           {round.myVote && (
             <p className="mt-3 text-center text-xs text-muted">
               Tu peux encore changer d&apos;avis jusqu&apos;à la fin du temps.
             </p>
           )}
-        </Card>
+        </div>
       ) : (
         <Notice tone="info">
           Tu ne participes pas à ce vote. Regarde le carnage tranquillement.

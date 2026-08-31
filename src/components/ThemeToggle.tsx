@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { IconMoon, IconSun } from "./icons";
+import { cx, iconButtonClass } from "./ui";
 
 const KEY = "imposteur:theme";
 const listeners = new Set<() => void>();
@@ -36,7 +37,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Passer en mode clair" : "Passer en mode sombre"}
-      className={`grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-muted transition hover:text-inku-600 active:scale-95 dark:hover:text-inku-300 ${className}`}
+      className={cx(iconButtonClass, className)}
     >
       {dark ? <IconSun size={18} /> : <IconMoon size={18} />}
     </button>

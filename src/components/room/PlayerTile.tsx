@@ -30,13 +30,13 @@ export function PlayerTile({
       onClick={onClick}
       type={onClick ? "button" : undefined}
       className={cx(
-        "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition",
+        "radius-blob-d flex w-full items-center gap-3 border p-3 text-left transition-all duration-200",
         selected
           ? "border-inku-500 bg-inku-50 dark:bg-inku-950/70"
           : "border-line bg-surface",
         active && !selected && "animate-[--animate-pulse-ring] border-inku-400",
         dimmed && "opacity-45",
-        onClick && "hover:border-inku-300 active:scale-[0.99] dark:hover:border-inku-700",
+        onClick && "hover:-translate-y-0.5 hover:border-inku-300 active:scale-[0.98] dark:hover:border-inku-700",
       )}
     >
       <Avatar

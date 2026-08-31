@@ -11,7 +11,7 @@ export default function ReglesPage() {
 
       <article className="mx-auto w-full max-w-2xl space-y-6 px-4 pt-6">
         <header className="text-center">
-          <div className="mx-auto w-fit">
+          <div className="mx-auto w-fit animate-[--animate-float]">
             <Mascot expression="sneaky" size={88} />
           </div>
           <h1 className="mt-3 font-display text-3xl font-bold">Les règles</h1>
@@ -161,9 +161,9 @@ function Steps({ items }: { items: string[] }) {
 
 function Definition({ term, children }: { term: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-line p-3">
-      <p className="font-display text-sm font-bold text-ink">{term}</p>
-      <p className="mt-1 text-sm">{children}</p>
+    <div className="ink-card radius-blob-d relative p-3.5">
+      <p className="font-display text-sm font-bold text-paper-ink">{term}</p>
+      <p className="mt-1 text-sm font-semibold text-paper-muted">{children}</p>
     </div>
   );
 }

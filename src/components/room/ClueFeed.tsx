@@ -46,43 +46,53 @@ export function ClueFeed({
               </span>
               <span className="h-px flex-1 bg-line" />
             </div>
-            <ul className="space-y-2">
-              {list.map((c) => {
+            <ul className="space-y-2.5">
+              {list.map((c, i) => {
                 const p = players.find((x) => x.id === c.playerId);
                 if (!p) return null;
+                const rightTail = i % 2 === 1;
                 return (
                   <li
                     key={`${c.playerId}-${c.turnNumber}`}
-                    className="flex animate-[--animate-fade-up] items-center gap-3 rounded-2xl border border-line bg-surface px-3 py-2.5"
+                    className="flex animate-[--animate-fade-up] items-start gap-2.5"
+                    style={{ animationDelay: `${i * 40}ms` }}
                   >
-                    <Avatar avatarId={p.avatarId} size={32} />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-xs font-semibold text-muted">{p.pseudo}</div>
+                    {!rightTail && <Avatar avatarId={p.avatarId} size={30} className="mt-0.5 shrink-0" />}
+                    <div
+                      className={cx(
+                        "ink-card relative min-w-0 flex-1 px-3.5 py-2.5",
+                        rightTail ? "radius-blob-b bubble-tail-right" : "radius-blob-a bubble-tail-left",
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-[11px] font-bold uppercase tracking-wide text-paper-muted">
+                          {p.pseudo}
+                        </span>
+                        {c.playerId === meId && <Badge tone="inku">toi</Badge>}
+                        {onReport && !c.passed && c.playerId !== meId && (
+                          <button
+                            type="button"
+                            onClick={() => onReport(c)}
+                            aria-label="Signaler cet indice"
+                            className={cx(
+                              "ml-auto grid h-6 w-6 shrink-0 place-items-center rounded-full transition active:scale-90",
+                              c.reported ? "text-rose-600" : "text-paper-muted/60 hover:text-rose-500",
+                            )}
+                          >
+                            <IconFlag size={12} />
+                          </button>
+                        )}
+                      </div>
                       <div
                         className={cx(
-                          "truncate font-display text-[15px] font-bold",
-                          c.passed && "italic text-muted",
+                          "mt-0.5 truncate font-display text-base font-bold",
+                          c.passed && "italic text-paper-muted",
                         )}
                       >
                         {c.passed ? "a passé son tour" : c.content}
                       </div>
                     </div>
-                    {c.playerId === meId && <Badge>toi</Badge>}
-                    {onReport && !c.passed && c.playerId !== meId && (
-                      <button
-                        type="button"
-                        onClick={() => onReport(c)}
-                        aria-label="Signaler cet indice"
-                        className={cx(
-                          "grid h-8 w-8 shrink-0 place-items-center rounded-full border transition active:scale-95",
-                          c.reported
-                            ? "border-rose-300 bg-rose-50 text-rose-600 dark:border-rose-800 dark:bg-rose-950"
-                            : "border-line text-muted hover:text-rose-500",
-                        )}
-                      >
-                        <IconFlag size={14} />
-                      </button>
-                    )}
+                    {rightTail && <Avatar avatarId={p.avatarId} size={30} className="mt-0.5 shrink-0" />}
                   </li>
                 );
               })}

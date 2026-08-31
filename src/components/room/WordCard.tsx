@@ -29,7 +29,7 @@ export function WordCard({
 
   if (spectator || !word) {
     return (
-      <div className="rounded-[--radius-card] border border-dashed border-line bg-surface p-5 text-center">
+      <div className="radius-blob-b border border-dashed border-line bg-surface p-5 text-center">
         <IconEye size={20} className="mx-auto text-muted" />
         <p className="mt-2 font-display text-base font-bold">Tu regardes cette manche</p>
         <p className="mt-1 text-sm text-muted">Tu joues à partir de la prochaine.</p>
@@ -41,24 +41,27 @@ export function WordCard({
     <button
       type="button"
       onClick={() => setHidden((h) => !h)}
-      className="relative w-full overflow-hidden rounded-[--radius-card] border border-inku-200 bg-gradient-to-br from-inku-50 to-white p-5 text-left transition active:scale-[0.99] dark:border-inku-900 dark:from-inku-950/60 dark:to-surface"
+      className="ink-card radius-blob-a relative w-full overflow-hidden p-5 text-left transition-transform duration-150 active:scale-[0.98]"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div aria-hidden="true" className="ink-blob -right-8 -top-6 h-24 w-28" />
+      <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Badge tone="inku">Ton mot</Badge>
+          <Badge tone="inku" className="bg-inku-100 text-inku-700">
+            Ton mot
+          </Badge>
           <p
             className={cx(
-              "mt-3 font-display text-3xl font-bold leading-tight transition",
+              "mt-3 font-display text-3xl font-bold leading-[0.95] transition sm:text-4xl",
               hidden && "select-none blur-md",
             )}
           >
             {word}
           </p>
-          <p className="mt-2 text-xs text-muted">
+          <p className="mt-2.5 text-xs font-semibold text-paper-muted">
             {CATEGORY_LABELS[category]} · appuie pour {hidden ? "révéler" : "masquer"}
           </p>
         </div>
-        <Mascot expression="determined" size={64} className="shrink-0" />
+        <Mascot expression="determined" size={62} className="shrink-0 drop-shadow-[0_10px_14px_rgba(43,8,101,0.28)]" />
       </div>
     </button>
   );
