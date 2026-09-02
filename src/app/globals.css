@@ -211,6 +211,22 @@ body {
   overscroll-behavior-y: none;
 }
 
+/*
+ * Halo d'ambiance : deux lueurs très douces, fixes (elles ne bougent pas au
+ * scroll, sinon on verrait une couture entre les sections). Sans ça le noir
+ * de fond est plat et lu comme un manque de fini plutôt qu'un choix.
+ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 60rem 34rem at 10% 6%, color-mix(in oklab, var(--color-encre-500) 13%, transparent), transparent 68%),
+    radial-gradient(ellipse 54rem 40rem at 92% 88%, color-mix(in oklab, var(--color-inku-500) 11%, transparent), transparent 70%);
+}
+
 /* Grain très léger sur toute l'app : la texture papier du manga, jamais un aplat plat. */
 body::before {
   content: "";
