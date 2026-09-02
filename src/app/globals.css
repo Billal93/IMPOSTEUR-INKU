@@ -159,11 +159,13 @@ body {
   --fg-muted: #6b6580;
   /* Teinte d'accent douce : fond des puces actives, encarts, tuiles choisies. */
   --accent-soft: #f5f2ff;
-  /* "Papier" des bulles BD : toujours clair, même en dark — c'est une page de manga posée sur l'écran. */
-  --paper: #faf6ff;
-  --paper-ink: #1c1030;
-  --paper-line: #35145e;
-  --paper-muted: #5f526a;
+  /* "Papier" des bulles BD : toujours clair, même en dark — c'est une page de
+     manga posée sur l'écran, pas un reste de mode clair. Volontairement PAS
+     blanc pur : un parchemin tamisé, sinon ça détonne sur fond noir. */
+  --paper: #e9e2f1;
+  --paper-ink: #221733;
+  --paper-line: #4a2a7a;
+  --paper-muted: #5f5470;
   color-scheme: light;
 }
 
@@ -175,10 +177,10 @@ body {
   --fg: #f2f0f7;
   --fg-muted: #9d97b0;
   --accent-soft: #231343;
-  --paper: #faf6ff;
-  --paper-ink: #1c1030;
-  --paper-line: #35145e;
-  --paper-muted: #5f526a;
+  --paper: #e9e2f1;
+  --paper-ink: #221733;
+  --paper-line: #4a2a7a;
+  --paper-muted: #5f5470;
   color-scheme: dark;
 }
 

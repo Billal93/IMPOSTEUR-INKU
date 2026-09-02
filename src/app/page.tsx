@@ -37,9 +37,7 @@ const STEPS = [
 export default function Home() {
   return (
     <main className="min-h-dvh overflow-x-clip">
-      <div className="mx-auto w-full max-w-[1160px] px-4 sm:px-8">
-        <AppHeader />
-      </div>
+      <AppHeader />
 
       {/* ------------------------------- Hero ------------------------------- */}
       <section className="relative">
@@ -142,17 +140,23 @@ export default function Home() {
           <div className="mt-12 grid gap-8 sm:mt-16 sm:grid-cols-3 sm:gap-5">
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 100}>
-                <article className={`ink-card ${s.shape} ${s.tilt} relative h-full p-6 sm:p-7`}>
-                  <span className="absolute right-4 top-[-15px] rotate-[-9deg] font-display text-lg font-bold uppercase tracking-[0.08em] text-encre-500 [text-shadow:2px_2px_0_var(--paper-line)]">
+                <article
+                  className={`${s.shape} ${s.tilt} relative h-full overflow-hidden border border-line bg-surface p-6 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.6)] sm:p-7`}
+                >
+                  <div
+                    aria-hidden="true"
+                    className="ink-blob -right-10 -top-10 h-28 w-28 opacity-[0.14]"
+                  />
+                  <span className="absolute right-4 top-[-15px] rotate-[-9deg] font-display text-lg font-bold uppercase tracking-[0.08em] text-encre-400 [text-shadow:2px_2px_0_var(--bg)]">
                     {s.sfx}
                   </span>
-                  <span className="inline-grid h-10 w-10 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] bg-paper-line font-display text-base font-bold text-white shadow-[3px_3px_0_var(--color-encre-500)]">
+                  <span className="brand-gradient relative inline-grid h-10 w-10 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] font-display text-base font-bold text-white shadow-[3px_3px_0_rgba(0,0,0,0.35)]">
                     {s.n}
                   </span>
-                  <h3 className="mt-5 font-display text-2xl font-bold leading-[1.03] tracking-[-0.02em]">
+                  <h3 className="relative mt-5 font-display text-2xl font-bold leading-[1.03] tracking-[-0.02em]">
                     {s.title}
                   </h3>
-                  <p className="mt-2 font-semibold leading-relaxed text-paper-muted">{s.body}</p>
+                  <p className="relative mt-2 font-semibold leading-relaxed text-muted">{s.body}</p>
                 </article>
               </Reveal>
             ))}
@@ -231,19 +235,23 @@ export default function Home() {
             <p className="mx-auto mt-4 max-w-[520px] leading-relaxed text-muted">
               Crée le lobby, balance le code dans le groupe et découvre qui craque le premier.
             </p>
-            <Link
-              href="/creer"
-              className="shine-sweep brand-gradient mx-auto mt-7 inline-flex h-14 w-full max-w-[340px] items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_13px_30px_-10px_rgba(116,55,208,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.96]"
-            >
-              Créer une partie
-              <IconArrowRight size={20} />
-            </Link>
-            <Link
-              href="/regles"
-              className="mt-4 inline-block text-sm font-semibold text-inku-600 underline-offset-4 hover:underline dark:text-inku-300"
-            >
-              Voir les règles en détail
-            </Link>
+            {/* flex-col : bouton et lien ne doivent jamais se retrouver
+                côte à côte, quelle que soit la largeur disponible. */}
+            <div className="mt-7 flex flex-col items-center gap-4">
+              <Link
+                href="/creer"
+                className="shine-sweep brand-gradient inline-flex h-14 w-full max-w-[340px] items-center justify-center gap-2 rounded-full font-display text-lg font-bold text-white shadow-[0_13px_30px_-10px_rgba(116,55,208,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.96]"
+              >
+                Créer une partie
+                <IconArrowRight size={20} />
+              </Link>
+              <Link
+                href="/regles"
+                className="text-sm font-semibold text-inku-300 underline-offset-4 hover:underline"
+              >
+                Voir les règles en détail
+              </Link>
+            </div>
           </div>
         </Reveal>
       </section>
