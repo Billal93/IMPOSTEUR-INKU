@@ -67,7 +67,18 @@ export default function Home() {
 
             {/* L'éclaboussure est derrière ; le titre passe en blanc par-dessus. */}
             <div className="relative isolate mx-auto grid w-fit max-w-full place-items-center lg:mx-0">
-              <InkBurst className="absolute left-[-20%] top-[-27%] -z-10 h-[154%] w-[136%] origin-[22%_56%] animate-ink-spread drop-shadow-[0_22px_36px_rgba(72,12,123,0.27)]" />
+              {/* aspect-[1000/190] plutôt que des hauteur/largeur indépendantes :
+                  le titre "IMPOSTEUR" forme une boîte bien plus large que
+                  haute (~7:1) que le tracé natif du SVG (~3.85:1, son
+                  viewBox 1000×260). Étirer le SVG en largeur et hauteur
+                  complètement indépendamment pour combler cet écart
+                  déformait ses courbes au point de faire apparaître un angle
+                  presque droit en bas à gauche. Ici l'étirement de
+                  preserveAspectRatio="none" reste modéré et surtout UNIFORME
+                  (un seul ratio cible, pas deux valeurs choisies au hasard) :
+                  la forme garde son dessin, juste un peu aplatie — et assez
+                  basse pour ne pas mordre sur le sous-titre juste en dessous. */}
+              <InkBurst className="absolute left-[-13%] top-1/2 -z-10 w-[124%] -translate-y-1/2 origin-[22%_56%] animate-ink-spread drop-shadow-[0_22px_36px_rgba(72,12,123,0.27)] aspect-[1000/190]" />
               {/* nowrap : le titre est un bloc, jamais coupé. La taille est
                   calée pour tenir dans la gouttière même avec la police de
                   repli, plus large que Clash Display. */}
