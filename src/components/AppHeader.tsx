@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { iconButtonClass } from "./ui";
+import { cx, iconButtonClass } from "./ui";
+import { InkuMark } from "./Mascot";
 import { IconArrowLeft, IconHelp } from "./icons";
 
 /**
- * En-tête commun. Le titre affiché est « IMPOSTEUR », jamais préfixé INKU —
- * et jamais accolé au monogramme K non plus : INKU signe le produit via le
- * watermark, il ne co-signe pas le jeu en en-tête.
+ * En-tête commun.
  *
- * Un fin trait dégradé en haut de la page casse le noir plat avant même que
- * le header n'apparaisse ; une lueur discrète derrière le mot-symbole évite
- * qu'il ne flotte, seul, sur un fond vide.
+ * Écart assumé au brief d'origine : le nom du jeu ne devait jamais être
+ * préfixé par INKU. À la demande explicite de Billal (deux allers-retours,
+ * capture de référence à l'appui), l'en-tête reprend le lockup « icône +
+ * INKU / IMPOSTEUR » — mais avec le vrai monogramme K (badge dégradé, même
+ * asset que le watermark), jamais l'icône abstraite inventée de la maquette.
+ * Le grand titre de la landing, lui, reste IMPOSTEUR seul.
  */
 export function AppHeader({
   back,
@@ -28,23 +30,29 @@ export function AppHeader({
         aria-hidden="true"
         className="h-px w-full bg-gradient-to-r from-transparent via-encre-500/50 to-inku-500/50"
       />
-      <header className="relative mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-4">
-        <div className="flex items-center gap-2">
+      <header className="relative mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-3.5">
+        <div className="flex min-w-0 items-center gap-2">
           {back && (
-            <Link href={back} aria-label="Retour" className={iconButtonClass}>
+            <Link href={back} aria-label="Retour" className={cx(iconButtonClass, "shrink-0")}>
               <IconArrowLeft size={18} />
             </Link>
           )}
-          <Link href="/" className="relative font-display text-xl font-bold tracking-tight active:scale-95">
-            <span
-              aria-hidden="true"
-              className="absolute -inset-x-4 -inset-y-3 -z-10 rounded-full bg-inku-500/20 blur-xl"
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 active:scale-95">
+            <InkuMark
+              variant="badge"
+              size={36}
+              className="shrink-0 drop-shadow-[0_4px_10px_rgba(124,58,237,0.45)]"
             />
-            <span className="brand-text">IMPOSTEUR</span>
+            <span className="flex min-w-0 items-baseline gap-1.5 whitespace-nowrap">
+              <span className="font-display text-[17px] font-bold leading-none">INKU</span>
+              <span className="truncate font-display text-[11px] font-bold uppercase leading-none tracking-[0.1em] text-muted">
+                / Imposteur
+              </span>
+            </span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {right}
           {!compact && (
             <Link href="/regles" aria-label="Les règles" className={iconButtonClass}>

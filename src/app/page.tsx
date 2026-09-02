@@ -4,17 +4,18 @@ import { Mascot } from "@/components/Mascot";
 import { InkBurst } from "@/components/InkBurst";
 import { Reveal } from "@/components/ui";
 import { PhonePreview } from "@/components/landing/PhonePreview";
+import type { Expression } from "@/lib/constants";
 import { IconArrowRight, IconTimer, IconUsers } from "@/components/icons";
 
 /** Les trois étapes de la section « Comment jouer ». */
-const STEPS = [
+const STEPS: { n: string; sfx: string; title: string; body: string; shape: string; expression: Expression }[] = [
   {
     n: "01",
     sfx: "TAP !",
     title: "Crée ou rejoins.",
     body: "Un joueur ouvre le lobby et partage le code. Tout le monde entre depuis son navigateur — pas d'appli, pas de compte.",
     shape: "radius-blob-a",
-    tilt: "sm:-rotate-1",
+    expression: "determined",
   },
   {
     n: "02",
@@ -22,7 +23,7 @@ const STEPS = [
     title: "Le même mot. Sauf un.",
     body: "Tout le monde voit le même mot d'anime. L'imposteur en reçoit un proche — sans savoir lequel des deux est le bon.",
     shape: "radius-blob-b",
-    tilt: "sm:rotate-1",
+    expression: "sneaky",
   },
   {
     n: "03",
@@ -30,7 +31,7 @@ const STEPS = [
     title: "Un indice, puis accuse.",
     body: "Chacun lâche son indice à son tour. Observez les hésitations, puis votez pour démasquer le menteur.",
     shape: "radius-blob-c",
-    tilt: "sm:-rotate-[0.5deg]",
+    expression: "suspicious",
   },
 ];
 
@@ -137,29 +138,69 @@ export default function Home() {
             </p>
           </Reveal>
 
-          <div className="mt-12 grid gap-8 sm:mt-16 sm:grid-cols-3 sm:gap-5">
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 100}>
-                <article
-                  className={`${s.shape} ${s.tilt} relative h-full overflow-hidden border border-line bg-surface p-6 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.6)] sm:p-7`}
-                >
+          {/* Zigzag mascotte / bulle : la mascotte alterne de côté à chaque
+              étape, la bulle pointe toujours vers elle. Pas d'overflow-hidden
+              sur la bulle — l'onomatopée doit pouvoir déborder du coin sans
+              être rognée. */}
+          <div className="mt-12 grid gap-10 sm:mt-16 sm:gap-8">
+            {STEPS.map((s, i) => {
+              const mascotLeft = i % 2 === 0;
+              return (
+                <Reveal key={s.n} delay={i * 100}>
+                  {/* Les pistes de la grille doivent suivre l'ordre visuel, pas
+                      seulement le peindre : en CSS Grid, `order` déplace aussi
+                      l'élément dans une piste différente (contrairement à
+                      Flexbox). Sans ce miroir, la mascotte "de droite" héritait
+                      de la piste large et la bulle se retrouvait écrasée dans
+                      les 72px prévus pour la mascotte. */}
                   <div
-                    aria-hidden="true"
-                    className="ink-blob -right-10 -top-10 h-28 w-28 opacity-[0.14]"
-                  />
-                  <span className="absolute right-4 top-[-15px] rotate-[-9deg] font-display text-lg font-bold uppercase tracking-[0.08em] text-encre-400 [text-shadow:2px_2px_0_var(--bg)]">
-                    {s.sfx}
-                  </span>
-                  <span className="brand-gradient relative inline-grid h-10 w-10 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] font-display text-base font-bold text-white shadow-[3px_3px_0_rgba(0,0,0,0.35)]">
-                    {s.n}
-                  </span>
-                  <h3 className="relative mt-5 font-display text-2xl font-bold leading-[1.03] tracking-[-0.02em]">
-                    {s.title}
-                  </h3>
-                  <p className="relative mt-2 font-semibold leading-relaxed text-muted">{s.body}</p>
-                </article>
-              </Reveal>
-            ))}
+                    className={`grid items-end gap-1 ${
+                      mascotLeft
+                        ? "grid-cols-[72px_1fr] sm:grid-cols-[150px_1fr]"
+                        : "grid-cols-[1fr_72px] sm:grid-cols-[1fr_150px]"
+                    }`}
+                  >
+                    <div
+                      className={`relative z-[1] ${mascotLeft ? "" : "order-2"} -mb-2 justify-self-center`}
+                    >
+                      <Mascot
+                        expression={s.expression}
+                        size={150}
+                        // !w- : le composant Mascot fixe width en style inline
+                        // (plus prioritaire qu'une classe normale) — sans le
+                        // "!" ici, la classe est ignorée et l'image s'affiche
+                        // à sa taille brute (150px), débordant de sa piste de
+                        // grille. Les valeurs suivent exactement les pistes
+                        // 72px / 150px définies au-dessus.
+                        className={`!w-[72px] drop-shadow-[0_14px_16px_rgba(0,0,0,0.4)] sm:!w-[150px] ${
+                          mascotLeft ? "" : "-scale-x-100"
+                        }`}
+                      />
+                    </div>
+                    <div
+                      className={`${s.shape} ${mascotLeft ? "bubble-tail-dark-left" : "bubble-tail-dark-right order-1"} relative min-h-[168px] border border-line bg-surface p-5 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.6)] sm:p-7`}
+                    >
+                      <span
+                        className={`absolute top-[-16px] rotate-[-9deg] font-display text-lg font-bold uppercase tracking-[0.08em] text-encre-400 [text-shadow:1.5px_1.5px_0_var(--bg)] ${
+                          mascotLeft ? "right-4" : "left-4"
+                        }`}
+                      >
+                        {s.sfx}
+                      </span>
+                      <span className="brand-gradient relative inline-grid h-9 w-9 rotate-[-8deg] place-items-center rounded-[50%_44%_55%_45%] font-display text-sm font-bold text-white shadow-[3px_3px_0_rgba(0,0,0,0.35)]">
+                        {s.n}
+                      </span>
+                      <h3 className="relative mt-4 font-display text-xl font-bold leading-[1.03] tracking-[-0.02em] sm:text-2xl">
+                        {s.title}
+                      </h3>
+                      <p className="relative mt-2 font-semibold leading-relaxed text-muted">
+                        {s.body}
+                      </p>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>

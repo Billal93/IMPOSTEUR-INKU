@@ -303,6 +303,35 @@ h1, h2, h3, .font-display {
 }
 
 /*
+ * Même languette, palette sombre (fond de carte, pas papier) : pour les
+ * bulles posées sur bg-surface plutôt que sur du papier clair.
+ */
+.bubble-tail-dark-left::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 18px;
+  left: -10px;
+  bottom: 20px;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform: rotate(28deg) skew(-9deg, -9deg);
+}
+.bubble-tail-dark-right::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 18px;
+  right: -10px;
+  bottom: 20px;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform: rotate(-28deg) skew(9deg, 9deg);
+}
+
+/*
  * Tache d'encre décorative : un blob dégradé posé en coin de carte, jamais
  * au centre. Purement décoratif (aria-hidden côté JSX), toujours dans un
  * parent overflow-hidden pour ne jamais provoquer de débordement horizontal.
