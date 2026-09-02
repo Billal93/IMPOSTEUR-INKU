@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ThemeToggle } from "./ThemeToggle";
 import { iconButtonClass } from "./ui";
 import { IconArrowLeft, IconHelp } from "./icons";
 
@@ -35,7 +34,6 @@ export function AppHeader({
             <IconHelp size={18} />
           </Link>
         )}
-        <ThemeToggle />
       </div>
     </header>
   );

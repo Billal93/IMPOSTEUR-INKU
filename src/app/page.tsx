@@ -3,6 +3,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Mascot } from "@/components/Mascot";
 import { InkBurst } from "@/components/InkBurst";
 import { Reveal } from "@/components/ui";
+import { PhonePreview } from "@/components/landing/PhonePreview";
 import { IconArrowRight, IconTimer, IconUsers } from "@/components/icons";
 
 /** Les trois étapes de la section « Comment jouer ». */
@@ -156,6 +157,55 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* --------------------------- Aperçu du jeu --------------------------- */}
+      <section className="relative overflow-hidden px-4 py-16 sm:px-8 sm:py-24">
+        <div className="mx-auto w-full max-w-[1160px]">
+          <Reveal className="sm:flex sm:items-end sm:justify-between sm:gap-12">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.13em] text-encre-500">
+                La partie dans ta poche
+              </p>
+              <h2 className="mt-2 font-display text-[clamp(34px,9vw,50px)] font-bold leading-[0.95] tracking-[-0.04em]">
+                Le doute, en direct.
+              </h2>
+            </div>
+            <p className="mt-4 max-w-[480px] leading-relaxed text-muted sm:mt-0">
+              L&apos;interface reste volontairement simple : une information importante à la fois, un
+              rythme de partie rapide, et juste assez de tension pour regarder tes potes de travers.
+            </p>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <div className="relative mt-10 overflow-hidden rounded-[30px_12px_42px_18px] border border-line bg-surface sm:mt-14 sm:grid sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] sm:items-center lg:rounded-[44px_15px_56px_19px]">
+              {/* Le mot fantôme, décoratif, en filigrane derrière le téléphone */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute right-[-8px] top-[54%] hidden -translate-y-1/2 rotate-90 select-none font-display text-[92px] leading-[0.8] tracking-[-0.06em] text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.13)] sm:block"
+                style={{ writingMode: "horizontal-tb" }}
+              >
+                MENTEUR
+              </span>
+
+              <div className="relative z-10 px-6 pb-2 pt-8 sm:px-12 sm:py-12">
+                <h3 className="font-display text-[28px] font-bold leading-[1.05] tracking-[-0.03em] sm:text-[40px]">
+                  Un écran.
+                  <br />
+                  Une suspicion.
+                </h3>
+                <p className="mt-3 max-w-[380px] leading-relaxed text-muted">
+                  Mot secret, indices et vote s&apos;enchaînent comme des cases de manga. Chaque écran
+                  garde le focus sur l&apos;action — pas sur une interface compliquée.
+                </p>
+              </div>
+
+              <div className="relative">
+                <PhonePreview />
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 

@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
-/* Toggle clair/sombre piloté par la classe .dark sur <html> (voir ThemeToggle). */
+/*
+ * App volontairement sombre uniquement : la classe .dark est posée en dur
+ * sur <html> (layout.tsx), jamais togglée. Le variant dark: reste défini
+ * pour les rares endroits qui en dépendent encore (InkuWatermark bascule
+ * entre deux fichiers PNG selon le thème, par ex.) ; le bloc :root ci-dessous
+ * ne sert plus que de filet si .dark était un jour retiré par erreur.
+ */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ------------------------------------------------------------------ */

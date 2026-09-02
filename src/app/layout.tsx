@@ -37,28 +37,22 @@ export const metadata: Metadata = {
   },
 };
 
+// L'app est volontairement sombre uniquement : pas de bascule clair/sombre,
+// pas de flash à masquer au premier paint — la classe est posée au rendu
+// serveur, une bonne fois pour toutes.
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf9fc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0d12" },
-  ],
+  themeColor: "#0e0d12",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
 };
 
-/** Applique le thème avant le premier paint pour éviter le flash. */
-const themeScript = `(function(){try{var t=localStorage.getItem("imposteur:theme");if(!t){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}if(t==="dark"){document.documentElement.classList.add("dark");}}catch(e){}})();`;
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="fr" className="dark">
       <body className={`${display.variable} ${body.variable} antialiased`}>
         {children}
         <InkuWatermark />
